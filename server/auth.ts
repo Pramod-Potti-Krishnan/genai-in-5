@@ -30,7 +30,7 @@ const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-session-secret';
 const scryptAsync = promisify(scrypt);
 
 // Generate JWT token for a user
-export function generateToken(user: User): string {
+export function generateToken(user: DbUser): string {
   const payload = {
     id: user.id,
     email: user.email,
@@ -86,13 +86,13 @@ export function setupAuth(app: Express) {
         usernameField: 'email',
         passwordField: 'password',
       },
-      async (email, password, done) => {
+      async (email: string, password: string, done: any) => {
         try {
           const user = await storage.getUserByEmail(email);
           if (!user || !(await comparePasswords(password, user.password))) {
             return done(null, false, { message: 'Invalid email or password' });
           }
-          return done(null, user);
+          return done(null, user as unknown as Express.User);
         } catch (error) {
           return done(error);
         }
@@ -101,7 +101,7 @@ export function setupAuth(app: Express) {
   );
 
   // Serialize user to session
-  passport.serializeUser((user, done) => {
+  passport.serializeUser((user: Express.User, done) => {
     done(null, user.id);
   });
 
@@ -109,7 +109,7 @@ export function setupAuth(app: Express) {
   passport.deserializeUser(async (id: number, done) => {
     try {
       const user = await storage.getUser(id);
-      done(null, user);
+      done(null, user as Express.User);
     } catch (error) {
       done(error);
     }
@@ -138,7 +138,7 @@ export function setupAuth(app: Express) {
       const token = generateToken(user);
 
       // Login the user (create session)
-      req.login(user, (err) => {
+      req.login(user as unknown as Express.User, (err) => {
         if (err) return next(err);
         
         // Return user data and token
@@ -159,13 +159,13 @@ export function setupAuth(app: Express) {
 
   // Login endpoint
   app.post("/api/auth/login", (req, res, next) => {
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", (err: any, user: DbUser | false, info: { message?: string }) => {
       if (err) return next(err);
       if (!user) {
         return res.status(401).json({ error: info?.message || "Authentication failed" });
       }
       
-      req.login(user, (err) => {
+      req.login(user as unknown as Express.User, (err) => {
         if (err) return next(err);
         
         // Generate JWT
@@ -204,7 +204,7 @@ export function setupAuth(app: Express) {
     }
     
     // Return user data (excluding password)
-    const user = req.user as User;
+    const user = req.user as Express.User;
     res.json({
       id: user.id,
       email: user.email,
@@ -220,8 +220,8 @@ export function setupAuth(app: Express) {
       return res.status(401).json({ error: "Not authenticated" });
     }
     
-    const user = req.user as User;
-    const token = generateToken(user);
+    const user = req.user as Express.User;
+    const token = generateToken(user as unknown as DbUser);
     
     res.json({ token });
   });

@@ -1,157 +1,112 @@
-/* Animations for the app */
-
-/* Equalizer animation for audio player */
-@keyframes equalize {
-  0% { height: 3px; }
-  50% { height: 12px; }
-  100% { height: 3px; }
-}
-
-.equalizer-bar {
-  width: 3px;
-  background-color: #fff;
-  margin: 0 1px;
-  border-radius: 1px;
-  animation: equalize 0.8s ease-in-out infinite;
-}
-
-.equalizer-bar:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.equalizer-bar:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.equalizer-bar:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-/* Rotating image animation */
-@keyframes slow-rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.rotating-img {
-  animation: slow-rotate 30s linear infinite;
-}
-
-/* Carousel and chips styling */
-.carousel {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;  /* Firefox */
-  padding: 0.5rem 0;
-}
-
-.carousel::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari, Opera */
-}
-
-.carousel-item {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-  width: 80%;
-  margin-right: 1rem;
-}
-
-.chips-row {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding: 0.5rem 0;
-}
-
-.chips-row::-webkit-scrollbar {
-  display: none;
-}
-
-.chip {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f3f4f6;
-  color: #4b5563;
-  font-size: 0.875rem;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  margin-right: 0.5rem;
-  white-space: nowrap;
-}
-
-/* Flashcard animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
+/* Progress animations */
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-.flashcard-enter {
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes growHorizontal {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes check {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animation classes */
+.pulse-animation {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.fade-in {
   animation: fadeIn 0.5s ease-out forwards;
 }
 
-.flashcard-pulse {
-  animation: pulse 0.6s ease-in-out;
+.slide-in {
+  animation: slideIn 0.4s ease-out forwards;
 }
 
-.flashcard-swipe-left {
-  transform-origin: center right;
-  animation: swipeLeft 0.3s ease forwards;
-}
-
-.flashcard-swipe-right {
-  transform-origin: center left;
-  animation: swipeRight 0.3s ease forwards;
-}
-
-@keyframes swipeLeft {
-  from { transform: translateX(0) rotate(0); opacity: 1; }
-  to { transform: translateX(-100%) rotate(-5deg); opacity: 0; }
-}
-
-@keyframes swipeRight {
-  from { transform: translateX(0) rotate(0); opacity: 1; }
-  to { transform: translateX(100%) rotate(5deg); opacity: 0; }
-}
-
-/* Topic card animation */
-.topic-card {
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.topic-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-/* Card completion checkmark animation */
-@keyframes checkmark {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+.grow-horizontal {
+  animation: growHorizontal 0.8s ease-out forwards;
+  transform-origin: left;
 }
 
 .check-animate {
-  animation: checkmark 0.3s ease-out forwards;
+  animation: check 0.3s ease-out forwards;
 }
 
-/* Topic icon background pulse */
-@keyframes bgPulse {
-  0% { opacity: 0.7; }
-  50% { opacity: 1; }
-  100% { opacity: 0.7; }
+/* Staggered animations for lists */
+.stagger-item {
+  opacity: 0;
 }
 
-.pulse-bg {
-  animation: bgPulse 2s ease-in-out infinite;
+.stagger-item:nth-child(1) {
+  animation: fadeIn 0.4s ease-out 0.1s forwards;
+}
+
+.stagger-item:nth-child(2) {
+  animation: fadeIn 0.4s ease-out 0.2s forwards;
+}
+
+.stagger-item:nth-child(3) {
+  animation: fadeIn 0.4s ease-out 0.3s forwards;
+}
+
+.stagger-item:nth-child(4) {
+  animation: fadeIn 0.4s ease-out 0.4s forwards;
+}
+
+.stagger-item:nth-child(5) {
+  animation: fadeIn 0.4s ease-out 0.5s forwards;
+}
+
+.stagger-item:nth-child(n+6) {
+  animation: fadeIn 0.4s ease-out 0.6s forwards;
 }

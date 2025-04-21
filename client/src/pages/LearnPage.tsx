@@ -10,7 +10,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Section, Audible } from "@/types";
+import { Section } from "@/types";
+import { Audible } from "@shared/schema";
 import { 
   Search,
   Headphones,

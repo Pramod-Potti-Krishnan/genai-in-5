@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "./components/AuthProvider";
+import { AppProvider } from "./app-context";
 import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
@@ -116,7 +117,9 @@ function App() {
       <TooltipProvider>
         <Toaster />
         <AuthProvider>
-          <Router />
+          <AppProvider>
+            <Router />
+          </AppProvider>
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>

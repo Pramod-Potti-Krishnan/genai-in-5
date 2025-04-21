@@ -68,6 +68,7 @@ interface WeeklyPulseCarouselProps {
 export default function WeeklyPulseCarousel({ playAudible }: WeeklyPulseCarouselProps) {
   return (
     <div className="mb-6">
+      <h2 className="text-xl font-bold mb-3">Weekly Pulse</h2>
       <div className="flex overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
         {weeklyPulseData.map((pulse) => (
           <WeeklyPulseCard key={pulse.id} pulse={pulse} onClick={playAudible} />

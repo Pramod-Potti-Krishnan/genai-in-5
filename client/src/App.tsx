@@ -3,46 +3,96 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider, useAuth } from "./components/AuthProvider";
 import NotFound from "@/pages/not-found";
-import Home from "@/pages/home";
-import Learn from "@/pages/learn";
-import AudioPlayer from "@/pages/audio-player";
-import Revise from "@/pages/revise";
-import Trivia from "@/pages/trivia";
-import Progress from "@/pages/progress";
-import Login from "@/pages/auth/login";
-import Register from "@/pages/auth/register";
-import BottomNav from "@/components/layout/BottomNav";
-import MiniPlayer from "@/components/layout/MiniPlayer";
-import { AppProvider } from "./app-context";
-import { useAppContext } from "./app-context";
+import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
+import HomePage from "@/pages/HomePage";
+import LearnPage from "@/pages/LearnPage";
+import AudioPlayerPage from "@/pages/AudioPlayerPage";
+import RevisePage from "@/pages/RevisePage";
+import TriviaPage from "@/pages/TriviaPage";
+import ProgressPage from "@/pages/ProgressPage";
+import BottomNavigation from "./components/BottomNavigation";
+import MiniPlayer from "./components/MiniPlayer";
+import { useState } from "react";
+import { Audible } from "@shared/schema";
 
-function AppRoutes() {
-  const { isAuthenticated } = useAppContext();
+export interface AudioPlayerState {
+  audible: Audible | null;
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+}
 
-  if (!isAuthenticated) {
+function Router() {
+  const { user } = useAuth();
+  const [audioState, setAudioState] = useState<AudioPlayerState>({
+    audible: null,
+    isPlaying: false,
+    currentTime: 0,
+    duration: 0
+  });
+
+  const playAudible = (audible: Audible) => {
+    setAudioState({
+      audible,
+      isPlaying: true,
+      currentTime: 0,
+      duration: audible.durationInSeconds || 0
+    });
+  };
+
+  const togglePlayPause = () => {
+    setAudioState(prev => ({
+      ...prev,
+      isPlaying: !prev.isPlaying
+    }));
+  };
+
+  const updateTime = (time: number) => {
+    setAudioState(prev => ({
+      ...prev,
+      currentTime: time
+    }));
+  };
+
+  if (!user) {
     return (
       <Switch>
-        <Route path="/" component={Login} />
-        <Route path="/register" component={Register} />
-        <Route component={Login} />
+        <Route path="/" component={LoginPage} />
+        <Route path="/register" component={RegisterPage} />
+        <Route component={LoginPage} />
       </Switch>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen pb-14">
+    <div className="pb-16 min-h-screen">
       <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/learn" component={Learn} />
-        <Route path="/audio/:id" component={AudioPlayer} />
-        <Route path="/revise" component={Revise} />
-        <Route path="/trivia" component={Trivia} />
-        <Route path="/progress" component={Progress} />
+        <Route path="/" component={() => <HomePage playAudible={playAudible} />} />
+        <Route path="/learn" component={() => <LearnPage playAudible={playAudible} />} />
+        <Route path="/player" component={() => 
+          <AudioPlayerPage 
+            audioState={audioState} 
+            togglePlayPause={togglePlayPause} 
+            updateTime={updateTime}
+          />
+        } />
+        <Route path="/revise" component={RevisePage} />
+        <Route path="/trivia" component={TriviaPage} />
+        <Route path="/progress" component={ProgressPage} />
         <Route component={NotFound} />
       </Switch>
-      <BottomNav />
-      <MiniPlayer />
+      
+      {audioState.audible && (
+        <MiniPlayer 
+          audioState={audioState} 
+          togglePlayPause={togglePlayPause}
+        />
+      )}
+      
+      <BottomNavigation />
     </div>
   );
 }
@@ -50,12 +100,12 @@ function AppRoutes() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppProvider>
-        <TooltipProvider>
-          <Toaster />
-          <AppRoutes />
-        </TooltipProvider>
-      </AppProvider>
+      <TooltipProvider>
+        <Toaster />
+        <AuthProvider>
+          <Router />
+        </AuthProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }

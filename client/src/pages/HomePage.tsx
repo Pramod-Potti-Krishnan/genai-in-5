@@ -1,0 +1,133 @@
+import { useState, useEffect } from "react";
+import { useLocalStorage } from "../lib/useLocalStorage";
+import { audibles } from "../lib/mockData";
+import { defaultUserProgress, UserProgressData } from "../lib/mockData";
+import { Audible } from "@shared/schema";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { useAuth } from "../components/AuthProvider";
+
+interface HomePageProps {
+  playAudible: (audible: Audible) => void;
+}
+
+export default function HomePage({ playAudible }: HomePageProps) {
+  const { user } = useAuth();
+  const [userProgress, setUserProgress] = useLocalStorage<UserProgressData>("userProgress", defaultUserProgress);
+  const [nextAudible, setNextAudible] = useState<Audible | null>(null);
+  const [recentAudibles, setRecentAudibles] = useState<Audible[]>([]);
+  
+  useEffect(() => {
+    // Find next audible (first incomplete)
+    const nextUp = audibles.find(audible => 
+      !userProgress.completedAudibles.includes(audible.id)
+    ) || audibles[0];
+    
+    setNextAudible(nextUp);
+    
+    // Get recent audibles (just show the last 4 for now)
+    const recent = [...audibles]
+      .sort((a, b) => b.id - a.id) // Sort by newest first (using id as proxy)
+      .slice(0, 4);
+    
+    setRecentAudibles(recent);
+  }, [userProgress]);
+  
+  const getTotalProgress = () => {
+    const totalAudibles = audibles.length;
+    const completedCount = userProgress.completedAudibles.length;
+    return Math.round((completedCount / totalAudibles) * 100);
+  };
+  
+  const formatDuration = (seconds: number) => {
+    return `${Math.floor(seconds / 60)} min`;
+  };
+  
+  if (!user) return null;
+  
+  return (
+    <div className="flex-1 pb-16">
+      <header className="p-4 border-b">
+        <h1 className="text-2xl font-bold text-gray-900">Home</h1>
+      </header>
+      
+      <main className="p-4 space-y-6">
+        {/* Next Up Card */}
+        <section className="space-y-2">
+          <h2 className="text-lg font-semibold text-gray-800">Next Up</h2>
+          {nextAudible && (
+            <Card className="overflow-hidden">
+              <div className="flex">
+                <div className="w-1/3 bg-gray-100">
+                  <img 
+                    src={nextAudible.coverImage || "https://via.placeholder.com/200"}
+                    alt={nextAudible.title}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="w-2/3 p-4 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-medium text-gray-900">{nextAudible.title}</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {formatDuration(nextAudible.durationInSeconds)} · 
+                      {audibles.find(a => a.id === nextAudible.sectionId)?.title || 'General'}
+                    </p>
+                  </div>
+                  <button
+                    className="bg-primary text-white rounded-full py-2 px-6 inline-flex items-center justify-center text-sm font-medium"
+                    onClick={() => playAudible(nextAudible)}
+                  >
+                    <i className="fas fa-play mr-2"></i> Play
+                  </button>
+                </div>
+              </div>
+            </Card>
+          )}
+        </section>
+        
+        {/* Progress Summary */}
+        <section className="space-y-2">
+          <h2 className="text-lg font-semibold text-gray-800">Progress Summary</h2>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">Overall Completion</span>
+                <span className="text-sm font-medium text-gray-900">{getTotalProgress()}%</span>
+              </div>
+              <Progress value={getTotalProgress()} className="h-2" />
+              <div className="mt-3 text-xs text-gray-500">
+                {userProgress.completedAudibles.length} of {audibles.length} audibles completed
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+        
+        {/* Recent Audibles */}
+        <section className="space-y-2">
+          <h2 className="text-lg font-semibold text-gray-800">Recent Audibles</h2>
+          <div className="overflow-x-auto -mx-4 px-4">
+            <div className="flex space-x-3 pb-2">
+              {recentAudibles.map(audible => (
+                <div 
+                  key={audible.id}
+                  className="flex-shrink-0 w-36 bg-white rounded-lg border shadow-sm overflow-hidden cursor-pointer"
+                  onClick={() => playAudible(audible)}
+                >
+                  <img 
+                    src={audible.coverImage || "https://via.placeholder.com/150x100"}
+                    alt={audible.title}
+                    className="w-full h-20 object-cover"
+                  />
+                  <div className="p-2">
+                    <h3 className="font-medium text-sm truncate">{audible.title}</h3>
+                    <p className="text-xs text-gray-600 mt-1">{formatDuration(audible.durationInSeconds)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}

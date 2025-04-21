@@ -1,0 +1,68 @@
+Progress 2.0 – Turn insights into motivation
+Objective
+Redesign the Progress view so it feels like a personal “game dashboard,” nudging users to return daily and celebrate milestones. Reduce vertical clutter and surface the most motivating metrics first.
+
+1. Hero “Scoreboard” strip (top of page)
+Global Rank card – user’s percentile + upward‑arrow delta (e.g., “Top 12 % ↑2”).
+
+XP / Level meter – circular ring or bar showing points earned toward next level.
+
+Current Streak flame – animated 🔥 icon with day‑count (e.g., “4‑day streak”).
+
+All three cards in a single horizontal row; tap any card → deeper analytics.
+
+2. Quick‑stats grid (2×2)
+
+Tile	Metric	Microcopy example
+🎧 Audibles completed	“18 / 50”	“Keep the momentum!”
+📚 Topics explored	“7 topics”	“Breadth builder”
+⭐ Average Quiz score	“78 %”	“Sharpshooter”
+🏅 Badges earned	“5 / 12”	“Next badge at 3 more”
+Each tile is a tap target leading to its detailed view.		
+3. Achievements & badges carousel
+Horizontally swipeable row of badge icons (locked / unlocked).
+
+Tooltip or tap reveals how to earn each badge (“Finish first topic”, “Score 9/10 quiz”).
+
+4. Topic mastery snapshot (collapsible)
+Collapse the long list into a single accordion titled “Topic Mastery”.
+
+Inside: compact chip‑style progress bars (e.g., chip “GenAI Foundations — 100 %” with tiny bar).
+
+Default state = collapsed to save vertical space; user expands when needed.
+
+5. Weekly recap CTA
+Sticky footer card: “🔄 View Weekly Pulse recap (2 min)” → deep links to latest digest.
+
+Visually separate with brand colour to catch the eye.
+
+6. Visual & interaction cues
+Use subtle micro‑animations: ring fills, badge unlock pop, streak flame flicker.
+
+Colour code: progress = brand accent; locked = grayscale; hover/tap = slight scale‑up.
+
+Ensure every primary metric is reachable in ≤ 1 scroll on 375 px devices.
+
+7. Data needs (mock for now)
+json
+Copy
+Edit
+{
+  "level": 3,
+  "xp": 420,
+  "xpToNext": 600,
+  "globalRankPercent": 12,
+  "rankDelta": +2,
+  "streakDays": 4,
+  "audiblesCompleted": 18,
+  "audiblesTotal": 50,
+  "topicsExplored": 7,
+  "avgQuizScore": 78,
+  "badgesEarned": 5,
+  "badgesTotal": 12,
+  "topicProgress": [
+    {"title":"GenAI Foundations","percent":100},
+    {"title":"AI in Finance","percent":10},
+    ...
+  ]
+}

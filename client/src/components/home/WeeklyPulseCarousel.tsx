@@ -3,22 +3,22 @@ import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { weeklyPulseData } from "@/lib/leaderboard-data";
 import { formatDuration } from "@/lib/utils";
-import { Audible } from "@shared/schema";
+import { HomeAudible } from "./types";
 
 interface WeeklyPulseCardProps {
   pulse: typeof weeklyPulseData[0];
-  onClick: (audible: Audible) => void;
+  onClick: (audible: HomeAudible) => void;
 }
 
 const WeeklyPulseCard = ({ pulse, onClick }: WeeklyPulseCardProps) => {
   const handleClick = () => {
     // Convert the pulse to an Audible for the audio player
-    const audible: Audible = {
-      id: pulse.id.toString(),
+    const audible: HomeAudible = {
+      id: pulse.id,
       title: pulse.title,
       summary: pulse.summary,
       duration: pulse.duration,
-      coverImage: pulse.coverImage,
+      coverImage: pulse.coverImage || null,
       audioUrl: pulse.audioUrl,
       sectionId: "weekly-pulse"
     };

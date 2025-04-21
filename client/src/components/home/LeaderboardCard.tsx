@@ -97,10 +97,10 @@ const MetricCard = ({ metric, className = "" }: MetricCardProps) => {
 };
 
 export default function LeaderboardCard() {
-  const [, navigate] = useNavigate();
+  const [, setLocation] = useLocation();
 
   const handleClick = () => {
-    navigate("/progress");
+    setLocation("/progress");
   };
 
   return (

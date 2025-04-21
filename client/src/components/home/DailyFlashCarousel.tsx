@@ -14,11 +14,11 @@ const DailyFlashCard = ({ flash, onClick }: DailyFlashCardProps) => {
   const handleClick = () => {
     // Convert the flash to an Audible for the audio player
     const audible: Audible = {
-      id: flash.id.toString(),
+      id: flash.id,
       title: flash.title,
       summary: flash.summary,
       duration: flash.duration,
-      coverImage: flash.coverImage,
+      coverImage: flash.coverImage || null,
       audioUrl: flash.audioUrl,
       sectionId: "daily-flash"
     };

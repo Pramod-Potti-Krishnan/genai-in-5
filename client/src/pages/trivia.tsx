@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppContext } from "@/app-context";
 import { getTriviaQuestions } from "@/lib/mock-data";
 import { TriviaQuestion, TriviaCategory } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import QuizOption from "@/components/quiz/QuizOption";
-import { CheckCircle, XCircle, Lightbulb, Edit, ShieldCheck, FlaskRound, ChevronLeft, Star } from "lucide-react";
+import CountdownTimer from "@/components/quiz/CountdownTimer";
+import { ConfettiEffect } from "@/components/ui/confetti";
+import { CheckCircle, XCircle, Lightbulb, Edit, ShieldCheck, FlaskRound, ChevronLeft, Star, Timer, Award } from "lucide-react";
 
 // Icon mapping for categories
 const CategoryIcon = ({ icon }: { icon: string }) => {

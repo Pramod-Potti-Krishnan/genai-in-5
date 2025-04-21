@@ -68,7 +68,6 @@ interface MonthlyRoundupCarouselProps {
 export default function MonthlyRoundupCarousel({ playAudible }: MonthlyRoundupCarouselProps) {
   return (
     <div className="mb-6">
-      <h2 className="text-xl font-bold mb-3">Monthly Round-Up</h2>
       <div className="flex overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
         {monthlyRoundupData.map((roundup) => (
           <MonthlyRoundupCard key={roundup.id} roundup={roundup} onClick={playAudible} />

@@ -1,0 +1,84 @@
+Cross‑app design harmonisation
+Objective
+Give every screen (Home · Learn · Revise · Trivia · Progress) a single, cohesive look‑and‑feel. Standardise shared UI elements, spacing, and interaction patterns so the product feels like one polished mobile app.
+
+1. Establish a mini design system
+Colour tokens (define in CSS variables):
+
+--brand-primary (nav icons, CTA buttons)
+
+--grey-bg (card backgrounds)
+
+--accent-success · --accent-warning
+
+Typography scale (e.g., h1 24px, h2 18px, body 14px). Use the same font stack everywhere.
+
+Spacing scale: 4 · 8 · 12 · 16 px multiples for padding / margins.
+
+Border‑radius: 12 px on all cards & inputs.
+
+Shadow: 0 2 6 rgba(0,0,0,.08) for all elevated cards.
+
+2. Shared reusable components
+
+Component	Usage	Key props
+<TopBar>	App title + hamburger	title
+<SectionHeader>	“Weekly Pulse”, “Learning Stats”	icon, text
+<Card>	Content blocks across pages	variant (info / quiz / topic)
+<Carousel>	Horizontal scrollers	items, snap
+<ProgressRing>	% rings on Home & Progress	percent, size
+<StatTile>	2×2 grids (Learning Stats)	icon, label, value, caption
+<IconChip>	Topic list, Category grid	icon, text, color
+All pages must import these rather than hand‑rolling bespoke styles.
+
+3. Page‑level alignment
+Header zone: TopBar, then page title (h1), then optional subtitle (p.subtitle).
+
+Content width: max 600 px centred; use padding-inline:16px.
+
+Section spacing: 24 px between major sections.
+
+SectionHeader + content always grouped in a <section> tag for semantics.
+
+4. Interaction consistency
+Horizontal swipe: implement via the shared <Carousel> on Home (Weekly Pulse, etc.) and Global Leaderboard row.
+
+Card tap states: 100 ms scale‑down & shadow deepen — identical across Topic cards, Trivia categories, etc.
+
+Route transitions: simple slide‑in‑from‑right, slide‑out‑to‑left for forward navigation; reverse for back.
+
+Skeleton loaders: use the same shimmer component whenever data is loading (e.g., Weekly Pulse, Progress ring).
+
+Empty states: show brand illustration + call‑to‑action (“No flashcards yet. Finish your first audible to unlock revision!”) — same style across pages.
+
+5. Iconography
+Adopt one icon set (e.g., Phosphor outline).
+
+Map every repeated concept to the same icon (e.g., 🎧 for audio, 🧠 for quiz). No emoji mash‑ups on some pages & SVG on others.
+
+6. Accessibility & performance
+Maintain ≥ 4.5:1 text contrast ratios using the new colour palette.
+
+Ensure focus states on all interactive components.
+
+Lazy‑load images & carousels below the fold.
+
+7. QA checklist for each screen
+TopBar, title, consistent padding.
+
+Uses shared components; no stray bespoke CSS.
+
+Looks correct at 320 px & 414 px widths.
+
+Tap‑targets ≥ 44 px.
+
+Dark mode inherits the same tokens (optional, if time).
+
+Deliverable
+One pull request that introduces the design‑system tokens, shared component folder, and refactors all five feature pages to use them — resulting in a visually consistent, seamless user experience.
+
+
+
+
+
+

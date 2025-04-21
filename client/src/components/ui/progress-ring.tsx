@@ -1,58 +1,85 @@
-import React from "react";
+import { cn } from "@/lib/utils";
 
 interface ProgressRingProps {
   percent: number;
-  size?: number;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
   strokeWidth?: number;
-  bgColor?: string;
-  progressColor?: string;
-  label?: React.ReactNode;
+  showLabel?: boolean;
+  labelClassName?: string;
+  color?: string;
 }
 
 export function ProgressRing({
   percent,
-  size = 100,
-  strokeWidth = 8,
-  bgColor = "#e5e7eb",
-  progressColor = "currentColor",
-  label
+  size = 'md',
+  className,
+  strokeWidth = 4,
+  showLabel = true,
+  labelClassName,
+  color = 'var(--brand-primary)'
 }: ProgressRingProps) {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (percent / 100) * circumference;
+  // Ensure percent is between 0 and 100
+  const normalizedPercent = Math.min(100, Math.max(0, percent));
   
+  // Size mappings
+  const sizeMap = {
+    sm: 64,
+    md: 100,
+    lg: 160
+  };
+  
+  const dimensions = sizeMap[size];
+  const radius = (dimensions - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (normalizedPercent / 100) * circumference;
+  
+  // Font size based on ring size
+  const fontSize = {
+    sm: 'text-sm',
+    md: 'text-lg',
+    lg: 'text-2xl'
+  };
+
   return (
-    <div className="relative inline-flex items-center justify-center">
-      <svg width={size} height={size} className="transform -rotate-90">
+    <div className={cn("relative inline-flex items-center justify-center", className)}>
+      <svg
+        width={dimensions}
+        height={dimensions}
+        viewBox={`0 0 ${dimensions} ${dimensions}`}
+        className="transform -rotate-90"
+      >
         {/* Background circle */}
         <circle
-          className="text-muted stroke-current"
-          stroke={bgColor}
-          fill="transparent"
-          strokeWidth={strokeWidth}
+          cx={dimensions / 2}
+          cy={dimensions / 2}
           r={radius}
-          cx={size / 2}
-          cy={size / 2}
+          fill="none"
+          stroke="var(--grey-border)"
+          strokeWidth={strokeWidth}
         />
         
         {/* Progress circle */}
         <circle
-          className="text-primary stroke-current transition-all duration-300 ease-in-out"
-          stroke={progressColor}
-          fill="transparent"
+          cx={dimensions / 2}
+          cy={dimensions / 2}
+          r={radius}
+          fill="none"
+          stroke={color}
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
-          strokeDashoffset={offset}
+          strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          r={radius}
-          cx={size / 2}
-          cy={size / 2}
+          className="transition-all duration-1000 ease-in-out"
         />
       </svg>
       
-      {label && (
+      {/* Percentage text */}
+      {showLabel && (
         <div className="absolute inset-0 flex items-center justify-center">
-          {label}
+          <span className={cn("font-semibold", fontSize[size], labelClassName)}>
+            {normalizedPercent}%
+          </span>
         </div>
       )}
     </div>

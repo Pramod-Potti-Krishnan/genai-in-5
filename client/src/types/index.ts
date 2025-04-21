@@ -4,22 +4,27 @@ export interface User {
   email: string;
 }
 
+// This interface extends and adapts database model for client-side use
 export interface Audible {
-  id: string;
+  id: number;  // Database uses serial (number) primary keys
   title: string;
-  summary: string;
-  duration: number; // in seconds
-  coverImage?: string;
+  description: string;  // From database
+  summary?: string;     // For client-side display
   audioUrl: string;
-  sectionId: string;
+  coverImage: string | null;
+  durationInSeconds: number;  // From database
+  duration?: number;          // Alias for durationInSeconds for compatibility
+  sectionId: number;          // Database uses integer foreign keys
+  createdAt?: Date | null;
 }
 
 export interface Section {
-  id: string;
+  id: number;             // Database uses serial (number) primary keys
   title: string;
-  icon: string;
-  color: string;
-  audibles: Audible[];
+  icon: string | null;
+  color?: string;         // Client-side property
+  createdAt?: Date | null;
+  audibles?: Audible[];   // For client-side relationships
 }
 
 export interface Flashcard {

@@ -41,11 +41,20 @@ function Router() {
   });
 
   const playAudible = (audible: Audible) => {
+    // Ensure the audible has all required properties for playback
+    const enhancedAudible: Audible = {
+      ...audible,
+      // Set duration from durationInSeconds if not explicitly provided
+      duration: audible.duration || audible.durationInSeconds || 0,
+      // Make sure summary is available (fallback to description)
+      summary: audible.summary || audible.description || '',
+    };
+    
     setAudioState({
-      audible,
+      audible: enhancedAudible,
       isPlaying: true,
       currentTime: 0,
-      duration: audible.duration || 0
+      duration: enhancedAudible.duration
     });
   };
 

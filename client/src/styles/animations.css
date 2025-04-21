@@ -1,116 +1,133 @@
-/* Rotating image animation */
-@keyframes spin {
+/* Flashcard animations */
+@keyframes flipIn {
   from {
-    transform: rotate(0deg);
+    transform: rotateY(0deg);
   }
   to {
-    transform: rotate(360deg);
+    transform: rotateY(180deg);
   }
 }
 
-.rotating-img {
-  animation: spin 15s linear infinite;
+@keyframes flipOut {
+  from {
+    transform: rotateY(180deg);
+  }
+  to {
+    transform: rotateY(0deg);
+  }
 }
 
-/* Equalizer animation for mini-player */
-@keyframes jump {
-  0% {
-    height: 5px;
-  }
-  100% {
-    height: 12px;
-  }
+.flashcard-container {
+  perspective: 1000px;
+}
+
+.flashcard {
+  position: relative;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flashcard.flipped {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.flashcard-front {
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.flashcard-back {
+  background: white;
+  transform: rotateY(180deg);
+}
+
+/* Audio equalizer animation for mini player */
+.equalizer {
+  display: flex;
+  align-items: flex-end;
+  height: 12px;
+  gap: 2px;
 }
 
 .equalizer-bar {
-  width: 3px;
+  width: 2px;
   background-color: currentColor;
-  border-radius: 1px;
+  border-radius: 2px;
+  animation: equalize 1s infinite;
 }
 
-.equalizer-bar:nth-child(1) {
-  animation: jump 0.6s ease infinite alternate;
+.equalizer-bar:nth-child(1) { animation-delay: 0.0s; height: 30%; }
+.equalizer-bar:nth-child(2) { animation-delay: 0.2s; height: 60%; }
+.equalizer-bar:nth-child(3) { animation-delay: 0.4s; height: 80%; }
+.equalizer-bar:nth-child(4) { animation-delay: 0.6s; height: 40%; }
+
+@keyframes equalize {
+  0% { transform: scaleY(0.8); }
+  50% { transform: scaleY(1.5); }
+  100% { transform: scaleY(0.8); }
 }
 
-.equalizer-bar:nth-child(2) {
-  animation: jump 0.6s ease 0.15s infinite alternate;
+/* Count Up Animation */
+.count-up-animate {
+  animation: countUp 1s ease-out forwards;
 }
 
-.equalizer-bar:nth-child(3) {
-  animation: jump 0.6s ease 0.3s infinite alternate;
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Carousel styles */
-.carousel {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* Hide scrollbar in Firefox */
-  touch-action: pan-x; /* Allow horizontal swipe */
+/* Progress Ring Animation */
+.progress-ring-circle {
+  transition: stroke-dashoffset 0.5s ease-out;
 }
 
-.carousel::-webkit-scrollbar {
-  display: none;
+.checkmark {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: draw 0.5s ease-in-out forwards;
+  animation-delay: 0.5s;
 }
 
-.carousel-card {
-  background: linear-gradient(135deg, var(--cardColor, #f8f9fa), #fff);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  scroll-snap-align: start;
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
-.badge-new {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background-color: #ff3b3b;
-  color: white;
-  font-size: 0.65rem;
-  font-weight: bold;
-  padding: 2px 6px;
-  border-radius: 4px;
-  z-index: 10;
+/* Card flip animation */
+.card-flip-enter {
+  transform: rotateY(0deg);
 }
 
-/* Chip styles for trending topics */
-.chips-row {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x proximity;
-  scrollbar-width: none;
-  touch-action: pan-x;
-  padding: 4px 0;
+.card-flip-enter-active {
+  transform: rotateY(180deg);
+  transition: transform 0.5s;
 }
 
-.chips-row::-webkit-scrollbar {
-  display: none;
+.card-flip-exit {
+  transform: rotateY(180deg);
 }
 
-.chip {
-  scroll-snap-align: start;
-  background-color: #f1f5f9;
-  border-radius: 100px;
-  padding: 6px 12px;
-  font-size: 0.875rem;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.chip:hover {
-  background-color: #e2e8f0;
-}
-
-/* Touch action utility class */
-.touch-action-pan-x {
-  touch-action: pan-x;
+.card-flip-exit-active {
+  transform: rotateY(0deg);
+  transition: transform 0.5s;
 }

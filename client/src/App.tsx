@@ -97,10 +97,8 @@ function Router() {
             />
           } />
           <Route path="/revise" component={RevisePage} />
-          <Route path="/revise-new" component={() => import('./pages/revise').then(module => {
-            const ReviseComponent = module.default;
-            return <ReviseComponent />;
-          })} />
+          {/* New version of revise will be activated later */}
+          {/* <Route path="/revise-new" component={RevisePage} /> */}
           <Route path="/trivia" component={TriviaPage} />
           <Route path="/progress" component={ProgressPage} />
           <Route path="/profile" component={Profile} />

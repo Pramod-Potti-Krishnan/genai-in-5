@@ -41,10 +41,10 @@
 /* Flashcard Styles */
 .flashcard-container {
   perspective: 1000px;
-  width: 90vw;
-  max-width: 350px;
-  height: 55vh;
-  max-height: 220px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 380px;
+  height: 420px;
   touch-action: pan-x;
 }
 
@@ -52,8 +52,11 @@
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.6s;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transform-style: preserve-3d;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .flashcard.flipped {
@@ -65,7 +68,7 @@
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
-  border-radius: 12px;
+  border-radius: 1rem;
   overflow: hidden;
 }
 
@@ -87,7 +90,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
+  background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 100%);
   z-index: 1;
 }
 
@@ -96,30 +99,56 @@
   z-index: 2;
   font-weight: bold;
   font-size: 1.5rem;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  margin-top: auto;
+}
+
+.flashcard-front p {
+  position: relative;
+  z-index: 2;
+  margin-bottom: auto;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+  font-size: 0.875rem;
 }
 
 .flashcard-back {
   background-color: white;
   transform: rotateY(180deg);
-  padding: 1rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
+}
+
+.flashcard-back h4 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: hsl(var(--primary));
+  letter-spacing: -0.5px;
 }
 
 .flashcard-back ul {
   flex: 1;
   overflow-y: auto;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding-right: 0.5rem;
+}
+
+.flashcard-back li {
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
 }
 
 /* Topic chips styling */
 .topic-chips {
   display: flex;
   overflow-x: auto;
-  padding: 0.5rem 1rem;
-  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  gap: 0.625rem;
   scrollbar-width: none; /* Firefox */
+  -webkit-overflow-scrolling: touch;
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 .topic-chips::-webkit-scrollbar {
@@ -129,16 +158,18 @@
 .topic-chip {
   flex: 0 0 auto;
   padding: 0.5rem 1rem;
-  border-radius: 999px;
+  border-radius: 9999px;
   white-space: nowrap;
   font-size: 0.875rem;
   font-weight: 500;
-  background-color: #f3f4f6;
-  color: #374151;
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  border: none;
+  cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
 
 .topic-chip.active {
-  background-color: var(--primary);
+  background-color: hsl(var(--primary));
   color: white;
 }

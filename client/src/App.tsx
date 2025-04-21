@@ -13,7 +13,6 @@ import LearnPage from "@/pages/LearnPage";
 import AudioPlayerPage from "@/pages/AudioPlayerPage";
 import AudiblePlayPage from "@/pages/AudiblePlayPage";
 import RevisePage from "@/pages/RevisePage";
-import RevisePageNew from "./pages/revise";
 import TriviaPage from "@/pages/TriviaPage";
 import ProgressPage from "@/pages/ProgressPage";
 import Profile from "@/pages/profile";
@@ -97,9 +96,7 @@ function Router() {
               updateTime={updateTime}
             />
           } />
-          <Route path="/revise" component={RevisePageNew} />
-          {/* New version of revise will be activated later */}
-          {/* <Route path="/revise-new" component={RevisePage} /> */}
+          <Route path="/revise" component={RevisePage} />
           <Route path="/trivia" component={TriviaPage} />
           <Route path="/progress" component={ProgressPage} />
           <Route path="/profile" component={Profile} />

@@ -4,6 +4,7 @@ import { Play } from "lucide-react";
 import { monthlyRoundupData } from "@/lib/leaderboard-data";
 import { formatDuration } from "@/lib/utils";
 import { HomeAudible } from "./types";
+import { useRef, useState, useEffect } from "react";
 
 interface MonthlyRoundupCardProps {
   roundup: typeof monthlyRoundupData[0];
@@ -66,12 +67,95 @@ interface MonthlyRoundupCarouselProps {
 }
 
 export default function MonthlyRoundupCarousel({ playAudible }: MonthlyRoundupCarouselProps) {
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  
+  // Handle keyboard navigation
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!carousel.contains(document.activeElement)) return;
+      
+      const SCROLL_AMOUNT = 300; // Amount to scroll with arrow keys
+      
+      switch (e.key) {
+        case 'ArrowRight':
+          carousel.scrollBy({ left: SCROLL_AMOUNT, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'ArrowLeft':
+          carousel.scrollBy({ left: -SCROLL_AMOUNT, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+      }
+    };
+    
+    carousel.setAttribute('tabindex', '0');
+    carousel.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      carousel.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+  
+  // Handle mouse events for desktop dragging
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!carouselRef.current) return;
+    
+    setIsDragging(true);
+    setStartX(e.pageX - carouselRef.current.offsetLeft);
+    setScrollLeft(carouselRef.current.scrollLeft);
+    
+    // Prevent text selection during drag
+    document.body.style.userSelect = 'none';
+  };
+  
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || !carouselRef.current) return;
+    
+    const x = e.pageX - carouselRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // Scroll speed multiplier
+    carouselRef.current.scrollLeft = scrollLeft - walk;
+  };
+  
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    document.body.style.userSelect = '';
+  };
+  
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      setIsDragging(false);
+      document.body.style.userSelect = '';
+    }
+  };
+
   return (
     <div className="mb-6">
-      <div className="flex overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
-        {monthlyRoundupData.map((roundup) => (
-          <MonthlyRoundupCard key={roundup.id} roundup={roundup} onClick={playAudible} />
-        ))}
+      <div className="-mx-4 px-4 pb-4">
+        <div 
+          ref={carouselRef}
+          className="flex overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide touch-pan-x"
+          style={{ 
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            cursor: isDragging ? 'grabbing' : 'grab',
+          }}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          role="region"
+          aria-label="Monthly Roundup audio content"
+        >
+          {monthlyRoundupData.map((roundup) => (
+            <MonthlyRoundupCard key={roundup.id} roundup={roundup} onClick={playAudible} />
+          ))}
+        </div>
       </div>
     </div>
   );

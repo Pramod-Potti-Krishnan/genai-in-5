@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { formatDuration } from "@/lib/utils";
 import { HomeAudible } from "./types";
+import { useRef, useState, useEffect } from "react";
 
 // Define trending topics data with audio content
 export const trendingTopicsData = [

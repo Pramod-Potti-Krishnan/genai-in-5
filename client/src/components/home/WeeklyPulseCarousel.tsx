@@ -15,13 +15,15 @@ const WeeklyPulseCard = ({ pulse, onClick }: WeeklyPulseCardProps) => {
   const handleClick = () => {
     // Convert the pulse to an Audible for the audio player
     const audible: HomeAudible = {
-      id: pulse.id,
+      id: Number(pulse.id) || 0,  // Convert string id to number
       title: pulse.title,
+      description: pulse.summary, // Use summary as description
       summary: pulse.summary,
-      duration: pulse.duration,
+      durationInSeconds: pulse.duration,
+      duration: pulse.duration,   // Provide both for compatibility
       coverImage: pulse.coverImage || null,
       audioUrl: pulse.audioUrl,
-      sectionId: "weekly-pulse"
+      sectionId: 0               // Default section ID
     };
     
     onClick(audible);

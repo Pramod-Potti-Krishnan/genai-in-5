@@ -1,9 +1,12 @@
 export interface HomeAudible {
-  id: string;
+  id: number;            // Database uses serial (number) primary keys
   title: string;
-  summary: string;
-  duration: number; // in seconds
+  description: string;   // From database
+  summary?: string;      // For client-side display
+  durationInSeconds: number; // From database
+  duration?: number;     // Alias for durationInSeconds for compatibility
   coverImage: string | null;
   audioUrl: string;
-  sectionId: string;
+  sectionId: number;     // Database uses integer foreign keys
+  createdAt?: Date | null;
 }

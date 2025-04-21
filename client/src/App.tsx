@@ -54,7 +54,7 @@ function Router() {
       audible: enhancedAudible,
       isPlaying: true,
       currentTime: 0,
-      duration: enhancedAudible.duration
+      duration: enhancedAudible.duration || enhancedAudible.durationInSeconds || 0
     });
   };
 

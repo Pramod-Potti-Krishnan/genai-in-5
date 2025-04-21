@@ -14,13 +14,15 @@ const DailyFlashCard = ({ flash, onClick }: DailyFlashCardProps) => {
   const handleClick = () => {
     // Convert the flash to an Audible for the audio player
     const audible: HomeAudible = {
-      id: flash.id,
+      id: Number(flash.id) || 0,  // Convert string id to number
       title: flash.title,
+      description: flash.summary, // Use summary as description
       summary: flash.summary,
-      duration: flash.duration,
+      durationInSeconds: flash.duration,
+      duration: flash.duration,   // Provide both for compatibility
       coverImage: flash.coverImage || null,
       audioUrl: flash.audioUrl,
-      sectionId: "daily-flash"
+      sectionId: 0                // Default section ID
     };
     
     onClick(audible);

@@ -114,7 +114,7 @@ const TopicCard = ({ topic, onClick }: TopicCardProps) => {
 };
 
 interface TrendingTopicsCarouselProps {
-  playAudible: (audible: TopicAudible) => void;
+  playAudible: (audible: HomeAudible) => void;
 }
 
 export default function TrendingTopicsCarousel({ playAudible }: TrendingTopicsCarouselProps) {

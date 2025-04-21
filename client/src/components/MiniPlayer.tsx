@@ -26,11 +26,17 @@ export default function MiniPlayer({ audioState, togglePlayPause }: MiniPlayerPr
     <div className="fixed bottom-16 left-0 right-0 bg-white border-t shadow-md p-2 z-10">
       <div className="flex items-center" onClick={navigateToPlayer}>
         <div className="w-10 h-10 bg-gray-100 rounded overflow-hidden mr-3">
-          <img 
-            src={audible.coverImage || "https://via.placeholder.com/40"} 
-            alt="Now playing thumbnail" 
-            className="w-full h-full object-cover"
-          />
+          {audible.coverImage ? (
+            <img 
+              src={audible.coverImage} 
+              alt="Now playing thumbnail" 
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-primary-50">
+              <span className="text-lg font-bold text-primary">{audible.title.charAt(0)}</span>
+            </div>
+          )}
         </div>
         <div className="flex-1 mr-3 truncate">
           <div className="font-medium text-gray-900 text-sm truncate">{audible.title}</div>
@@ -45,7 +51,15 @@ export default function MiniPlayer({ audioState, togglePlayPause }: MiniPlayerPr
             togglePlayPause();
           }}
         >
-          <i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'} text-sm`}></i>
+          {isPlaying ? (
+            <div className="flex items-end h-5 space-x-1">
+              <div className="equalizer-bar h-3"></div>
+              <div className="equalizer-bar h-5"></div>
+              <div className="equalizer-bar h-2"></div>
+            </div>
+          ) : (
+            <i className="fas fa-play text-sm ml-1"></i>
+          )}
         </button>
       </div>
     </div>

@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocalStorage } from "../lib/useLocalStorage";
 import { audibles } from "../lib/mockData";
 import { defaultUserProgress, UserProgressData } from "../lib/mockData";
 import { Audible } from "@shared/schema";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "../components/AuthProvider";
 import LeaderboardCard from "@/components/home/LeaderboardCard";
@@ -11,6 +12,8 @@ import WeeklyPulseCarousel from "@/components/home/WeeklyPulseCarousel";
 import DailyFlashCarousel from "@/components/home/DailyFlashCarousel";
 import MonthlyRoundupCarousel from "@/components/home/MonthlyRoundupCarousel";
 import RecentUpdatesCarousel from "@/components/home/RecentUpdatesCarousel";
+import GreetingBanner from "@/components/home/GreetingBanner";
+import { ProgressRing } from "@/components/ui/progress-ring";
 import { HomeAudible } from "@/components/home/types";
 
 interface HomePageProps {
@@ -68,6 +71,39 @@ export default function HomePage({ playAudible }: HomePageProps) {
     playAudible(audibleToPlay);
   };
   
+  // Initialize carousel drag-to-scroll functionality
+  useEffect(() => {
+    const setupCarouselSwipe = () => {
+      const carousels = document.querySelectorAll('.carousel');
+      
+      carousels.forEach(carousel => {
+        carousel.addEventListener('wheel', (e: any) => {
+          if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
+          e.preventDefault();
+          carousel.scrollLeft += e.deltaX;
+        });
+      });
+    };
+    
+    // Run after DOM is ready
+    setTimeout(setupCarouselSwipe, 500);
+    
+    return () => {
+      const carousels = document.querySelectorAll('.carousel');
+      carousels.forEach(carousel => {
+        carousel.removeEventListener('wheel', () => {});
+      });
+    };
+  }, []);
+  
+  // Popular trending topics
+  const trendingTopics = [
+    "GenAI Basics", "LLM Architecture", "Prompt Engineering", 
+    "AI in Business", "Healthcare AI", "AI Ethics", 
+    "Multimodal Models", "Fine-tuning", "Embeddings", 
+    "RAG Systems", "AI Agents"
+  ];
+  
   return (
     <div className="flex-1 pb-16">
       <header className="p-4 border-b">
@@ -75,21 +111,39 @@ export default function HomePage({ playAudible }: HomePageProps) {
       </header>
       
       <main className="p-4 space-y-6">
+        {/* Personal Greeting */}
+        <GreetingBanner userName="Pramod" />
+        
         {/* Global Leaderboard - First in the order */}
         <LeaderboardCard />
         
         {/* Next Up Card - Second in the order */}
         <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-gray-800">Next Up</h2>
+          <h2 className="text-lg font-semibold text-gray-800">
+            <span className="inline-flex items-center">
+              <span className="icon mr-2">⏭️</span>
+              Next Up
+            </span>
+          </h2>
           {nextAudible && (
-            <Card className="overflow-hidden">
+            <Card className="overflow-hidden relative">
               <div className="flex">
-                <div className="w-1/3 bg-gray-100">
+                <div className="w-1/3 bg-gray-100 relative">
                   <img 
                     src={nextAudible.coverImage || "https://via.placeholder.com/200"}
                     alt={nextAudible.title}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover rotating-img"
                   />
+                  {/* Overlay progress circle */}
+                  <div className="absolute bottom-2 right-2">
+                    <ProgressRing 
+                      percent={40} 
+                      size={36} 
+                      strokeWidth={3}
+                      progressColor="var(--primary)" 
+                      bgColor="rgba(255,255,255,0.5)"
+                    />
+                  </div>
                 </div>
                 <div className="w-2/3 p-4 flex flex-col justify-between">
                   <div>
@@ -112,26 +166,71 @@ export default function HomePage({ playAudible }: HomePageProps) {
         </section>
         
         {/* Weekly Pulse - Third in the order */}
-        <WeeklyPulseCarousel playAudible={handlePlayHomeAudible} />
-        
-        {/* Monthly Round-Up - Fourth in the order (New) */}
-        <MonthlyRoundupCarousel playAudible={handlePlayHomeAudible} />
-        
-        {/* Recent Updates - Fifth in the order (New) */}
-        <RecentUpdatesCarousel playAudible={handlePlayHomeAudible} />
-        
-        {/* Progress Summary - Optional */}
         <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-gray-800">Progress Summary</h2>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Overall Completion</span>
-                <span className="text-sm font-medium text-gray-900">{getTotalProgress()}%</span>
+          <h2 className="text-lg font-semibold text-gray-800">
+            <span className="inline-flex items-center">
+              <span className="icon mr-2">🎧</span>
+              Weekly Pulse
+            </span>
+          </h2>
+          <div className="carousel" tabIndex={0}>
+            <WeeklyPulseCarousel playAudible={handlePlayHomeAudible} />
+          </div>
+        </section>
+        
+        {/* Monthly Round-Up - Fourth in the order */}
+        <section className="space-y-2">
+          <h2 className="text-lg font-semibold text-gray-800">
+            <span className="inline-flex items-center">
+              <span className="icon mr-2">📅</span>
+              Monthly Round-Up
+            </span>
+          </h2>
+          <div className="carousel" tabIndex={0}>
+            <MonthlyRoundupCarousel playAudible={handlePlayHomeAudible} />
+          </div>
+        </section>
+        
+        {/* Trending Topics - Fifth in the order */}
+        <section className="space-y-2">
+          <h2 className="text-lg font-semibold text-gray-800">
+            <span className="inline-flex items-center">
+              <span className="icon mr-2">🔥</span>
+              Trending Topics
+            </span>
+          </h2>
+          <div className="chips-row" tabIndex={0}>
+            {trendingTopics.map((tag, index) => (
+              <div key={index} className="chip">
+                {tag}
               </div>
-              <Progress value={getTotalProgress()} className="h-2" />
-              <div className="mt-3 text-xs text-gray-500">
-                {userProgress.completedAudibles.length} of {audibles.length} audibles completed
+            ))}
+          </div>
+        </section>
+        
+        {/* Progress Summary - with ring instead of bar */}
+        <section className="space-y-2">
+          <h2 className="text-lg font-semibold text-gray-800">
+            <span className="inline-flex items-center">
+              <span className="icon mr-2">📊</span>
+              Progress Summary
+            </span>
+          </h2>
+          <Card>
+            <CardContent className="p-4 flex items-center justify-between">
+              <div className="flex-1">
+                <span className="text-sm font-medium text-gray-700">Overall Completion</span>
+                <div className="mt-3 text-xs text-gray-500">
+                  {userProgress.completedAudibles.length} of {audibles.length} audibles completed
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <ProgressRing 
+                  percent={getTotalProgress()} 
+                  size={80} 
+                  strokeWidth={8}
+                  label={<span className="text-lg font-bold">{getTotalProgress()}%</span>}
+                />
               </div>
             </CardContent>
           </Card>

@@ -11,6 +11,7 @@ import RegisterPage from "@/pages/RegisterPage";
 import HomePage from "@/pages/HomePage";
 import LearnPage from "@/pages/LearnPage";
 import AudioPlayerPage from "@/pages/AudioPlayerPage";
+import AudiblePlayPage from "@/pages/AudiblePlayPage";
 import RevisePage from "@/pages/RevisePage";
 import TriviaPage from "@/pages/TriviaPage";
 import ProgressPage from "@/pages/ProgressPage";
@@ -83,6 +84,13 @@ function Router() {
           <Route path="/learn" component={() => <LearnPage playAudible={playAudible} />} />
           <Route path="/player" component={() => 
             <AudioPlayerPage 
+              audioState={audioState} 
+              togglePlayPause={togglePlayPause} 
+              updateTime={updateTime}
+            />
+          } />
+          <Route path="/play/:audibleId" component={() => 
+            <AudiblePlayPage 
               audioState={audioState} 
               togglePlayPause={togglePlayPause} 
               updateTime={updateTime}

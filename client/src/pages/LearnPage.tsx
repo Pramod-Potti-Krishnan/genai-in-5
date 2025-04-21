@@ -108,7 +108,7 @@ export default function LearnPage({ playAudible }: LearnPageProps) {
   
   const handlePlayAudible = (audible: Audible) => {
     playAudible(audible);
-    setLocation(`/audio/${audible.id}`);
+    setLocation(`/play/${audible.id}`);
   };
   
   const toggleBookmark = (audibleId: string, e: React.MouseEvent) => {

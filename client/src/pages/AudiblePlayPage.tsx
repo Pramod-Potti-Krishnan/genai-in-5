@@ -158,7 +158,7 @@ export default function AudiblePlayPage({
   };
   
   const goBack = () => {
-    navigate(-1);
+    navigate("/learn");
   };
   
   return (

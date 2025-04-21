@@ -32,6 +32,10 @@ export const flashcards = pgTable("flashcards", {
   id: serial("id").primaryKey(),
   audibleId: integer("audible_id").notNull(),
   points: text("points").array().notNull(),
+  lineIllustration: text("line_illustration"),
+  title: text("title"),
+  sectionId: integer("section_id"),
+  difficulty: text("difficulty"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

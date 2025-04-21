@@ -1,0 +1,49 @@
+Goal
+Transform the current text‑heavy Revise view into an engaging, visual flash‑card experience that strengthens recall through simple line drawings plus key points.
+
+1. Top‑level layout
+Topic gallery – a grid or horizontally scrollable row of large Topic Cards (one per learning topic).
+
+Each Topic Card displays:<br>  • Topic title<br>  • Small monochrome icon or line illustration representing the theme.
+
+When a Topic Card is tapped, it opens a full‑screen carousel dedicated to that topic.
+
+2. In‑topic carousel behaviour
+Horizontal swipe (left ↔ right) to move through cards.
+
+Optional dot indicators or progress text (e.g., “Card 2 / 8”).
+
+Each card must fill most of the viewport and snap cleanly on swipe.
+
+3. Card design (inside carousel)
+Upper half – a simple line drawing / icon that visually hints at the concept (e.g., a brain outline for “LLM Basics”, a shield for “AI Safety”).
+
+Lower half – concise text:<br>  • One short headline<br>  • Up to three bullet‑points or a 2‑sentence summary.
+
+A subtle “✓ Mark reviewed” action (button or tap‑to‑flip) to record completion.
+
+4. UX details
+On first entry, the carousel opens at unreviewed cards to prioritise new material.
+
+After marking the final card reviewed, show a friendly toast (“Great job! Topic completed.”) and return to the Topic gallery.
+
+Preserve swipe fluidity on mobile (use touch‑friendly gestures; no visible scrollbars).
+
+5. Visual style guidelines
+Minimalist, black‑and‑white or pastel line art for consistency and fast loading.
+
+Maintain brand font and spacing; adhere to ≥ 44 px tap targets.
+
+Light drop‑shadow or soft border‑radius on cards to create depth.
+
+6. Data & state
+Use the existing mock flash‑card data; add a lineIllustration field (URL or SVG reference).
+
+Store reviewed flag per card in local storage so progress persists.
+
+7. Out of scope for this task
+No code samples or specific libraries prescribed—choose the simplest path Replit supports.
+
+Analytics wiring and backend sync will happen in a later phase.
+
+Deliverable: A polished Revise page where users choose a topic card, swipe through a visually rich carousel of line‑drawing flashcards, and mark each as reviewed.

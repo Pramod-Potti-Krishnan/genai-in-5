@@ -149,6 +149,14 @@ export const flashcards: Flashcard[] = [
   {
     id: 1,
     audibleId: 1,
+    title: "Large Language Models",
+    sectionId: 1,
+    difficulty: "Intermediate",
+    lineIllustration: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="20" width="60" height="60" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="50" cy="40" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M35,60 Q50,80 65,60" fill="none" stroke="currentColor" stroke-width="2"/>
+    </svg>`,
     points: [
       "LLMs are neural networks trained on vast text datasets to predict the next word in a sequence.",
       "Transformer architecture enables models to understand context and relationships between words.",
@@ -159,6 +167,14 @@ export const flashcards: Flashcard[] = [
   {
     id: 2,
     audibleId: 2,
+    title: "Prompt Engineering",
+    sectionId: 4,
+    difficulty: "Basic",
+    lineIllustration: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="30" width="60" height="40" fill="none" stroke="currentColor" stroke-width="2"/>
+      <line x1="25" y1="45" x2="75" y2="45" stroke="currentColor" stroke-width="2"/>
+      <line x1="25" y1="55" x2="60" y2="55" stroke="currentColor" stroke-width="2"/>
+    </svg>`,
     points: [
       "Effective prompts include clear instructions, context, and expected output format.",
       "Chain-of-thought prompting helps models solve complex reasoning tasks step-by-step.",
@@ -169,6 +185,18 @@ export const flashcards: Flashcard[] = [
   {
     id: 3,
     audibleId: 3,
+    title: "Market Analysis",
+    sectionId: 2,
+    difficulty: "Intermediate",
+    lineIllustration: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20,80 L20,20 L80,20" stroke="currentColor" stroke-width="2" fill="none"/>
+      <path d="M30,70 L40,50 L50,60 L60,40 L70,30" stroke="currentColor" stroke-width="2" fill="none"/>
+      <circle cx="30" cy="70" r="3" fill="currentColor"/>
+      <circle cx="40" cy="50" r="3" fill="currentColor"/>
+      <circle cx="50" cy="60" r="3" fill="currentColor"/>
+      <circle cx="60" cy="40" r="3" fill="currentColor"/>
+      <circle cx="70" cy="30" r="3" fill="currentColor"/>
+    </svg>`,
     points: [
       "AI can analyze market trends from vast datasets much faster than human analysts.",
       "Machine learning models can predict market movements with increasing accuracy.",
@@ -179,6 +207,14 @@ export const flashcards: Flashcard[] = [
   {
     id: 4,
     audibleId: 4,
+    title: "Fraud Detection",
+    sectionId: 2,
+    difficulty: "Advanced",
+    lineIllustration: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M35,35 L65,65 M65,35 L35,65" stroke="currentColor" stroke-width="2"/>
+      <path d="M50,30 L50,70" stroke="currentColor" stroke-width="2" stroke-dasharray="2,2"/>
+    </svg>`,
     points: [
       "AI systems can detect unusual patterns that indicate potential fraud in real-time.",
       "Machine learning models continuously improve fraud detection by learning from new cases.",
@@ -189,6 +225,14 @@ export const flashcards: Flashcard[] = [
   {
     id: 5,
     audibleId: 5,
+    title: "AI Ethics",
+    sectionId: 5,
+    difficulty: "Intermediate",
+    lineIllustration: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50,20 L80,40 L80,70 L50,90 L20,70 L20,40 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <line x1="20" y1="40" x2="80" y2="70" stroke="currentColor" stroke-width="1"/>
+      <line x1="20" y1="70" x2="80" y2="40" stroke="currentColor" stroke-width="1"/>
+    </svg>`,
     points: [
       "Responsible AI development requires transparency in how decisions are made.",
       "Bias in training data can lead to unfair or discriminatory AI outcomes.",
@@ -199,6 +243,15 @@ export const flashcards: Flashcard[] = [
   {
     id: 6,
     audibleId: 6,
+    title: "GenAI Business Impact",
+    sectionId: 6,
+    difficulty: "Basic",
+    lineIllustration: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="25" y="40" width="20" height="40" fill="none" stroke="currentColor" stroke-width="2"/>
+      <rect x="55" y="30" width="20" height="50" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M20,80 L80,80" stroke="currentColor" stroke-width="2"/>
+      <path d="M35,30 L65,20" stroke="currentColor" stroke-width="2" stroke-dasharray="2,2"/>
+    </svg>`,
     points: [
       "Generative AI is creating new revenue streams across multiple business sectors.",
       "Content creation, customer service, and product design are being transformed by GenAI.",
@@ -209,6 +262,17 @@ export const flashcards: Flashcard[] = [
   {
     id: 7,
     audibleId: 7,
+    title: "AI in Marketing",
+    sectionId: 6,
+    difficulty: "Intermediate",
+    lineIllustration: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="50" cy="50" r="15" fill="none" stroke="currentColor" stroke-width="2"/>
+      <line x1="50" y1="20" x2="50" y2="30" stroke="currentColor" stroke-width="2"/>
+      <line x1="50" y1="70" x2="50" y2="80" stroke="currentColor" stroke-width="2"/>
+      <line x1="20" y1="50" x2="30" y2="50" stroke="currentColor" stroke-width="2"/>
+      <line x1="70" y1="50" x2="80" y2="50" stroke="currentColor" stroke-width="2"/>
+    </svg>`,
     points: [
       "AI enables hyper-personalization of marketing messages based on individual behavior.",
       "Predictive analytics helps marketers identify high-value prospects and opportunities.",
@@ -219,6 +283,14 @@ export const flashcards: Flashcard[] = [
   {
     id: 8,
     audibleId: 8,
+    title: "Medical Imaging",
+    sectionId: 3,
+    difficulty: "Advanced",
+    lineIllustration: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="25" y="25" width="50" height="50" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="60" cy="40" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M30,60 Q40,30 55,45 Q70,60 70,70" fill="none" stroke="currentColor" stroke-width="2"/>
+    </svg>`,
     points: [
       "AI can detect patterns in medical images that human clinicians might miss.",
       "Machine learning models are increasingly accurate at early disease detection.",
@@ -229,6 +301,21 @@ export const flashcards: Flashcard[] = [
   {
     id: 9,
     audibleId: 9,
+    title: "Drug Discovery",
+    sectionId: 3,
+    difficulty: "Advanced",
+    lineIllustration: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="30" cy="40" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="50" cy="30" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="70" cy="40" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="40" cy="60" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="60" cy="60" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+      <line x1="30" y1="40" x2="50" y2="30" stroke="currentColor" stroke-width="2"/>
+      <line x1="50" y1="30" x2="70" y2="40" stroke="currentColor" stroke-width="2"/>
+      <line x1="70" y1="40" x2="60" y2="60" stroke="currentColor" stroke-width="2"/>
+      <line x1="60" y1="60" x2="40" y2="60" stroke="currentColor" stroke-width="2"/>
+      <line x1="40" y1="60" x2="30" y2="40" stroke="currentColor" stroke-width="2"/>
+    </svg>`,
     points: [
       "AI can predict protein folding and molecular interactions for drug development.",
       "Machine learning accelerates compound screening by predicting effectiveness.",
@@ -239,6 +326,15 @@ export const flashcards: Flashcard[] = [
   {
     id: 10,
     audibleId: 10,
+    title: "Advanced Prompting",
+    sectionId: 4,
+    difficulty: "Advanced",
+    lineIllustration: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="30" width="60" height="40" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M30,40 L70,40 M30,50 L70,50 M30,60 L70,60" stroke="currentColor" stroke-width="2"/>
+      <path d="M25,35 L35,45 M25,45 L35,35" stroke="currentColor" stroke-width="1"/>
+      <path d="M65,55 L75,65 M65,65 L75,55" stroke="currentColor" stroke-width="1"/>
+    </svg>`,
     points: [
       "Format engineering structures prompts for optimal model comprehension.",
       "Role-based prompting assigns specific personas to the AI for tailored responses.",

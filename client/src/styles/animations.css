@@ -1,91 +1,70 @@
-/* Rotating image animation */
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+/* Animations for the app */
 
-.rotating-img {
-  animation: spin 15s linear infinite;
-}
-
-/* Equalizer animation for mini-player */
-@keyframes jump {
-  0% {
-    height: 5px;
-  }
-  100% {
-    height: 12px;
-  }
+/* Equalizer animation for audio player */
+@keyframes equalize {
+  0% { height: 3px; }
+  50% { height: 12px; }
+  100% { height: 3px; }
 }
 
 .equalizer-bar {
   width: 3px;
-  background-color: currentColor;
+  background-color: #fff;
+  margin: 0 1px;
   border-radius: 1px;
+  animation: equalize 0.8s ease-in-out infinite;
 }
 
 .equalizer-bar:nth-child(1) {
-  animation: jump 0.6s ease infinite alternate;
+  animation-delay: 0s;
 }
 
 .equalizer-bar:nth-child(2) {
-  animation: jump 0.6s ease 0.15s infinite alternate;
+  animation-delay: 0.2s;
 }
 
 .equalizer-bar:nth-child(3) {
-  animation: jump 0.6s ease 0.3s infinite alternate;
+  animation-delay: 0.4s;
 }
 
-/* Carousel styles */
+/* Rotating image animation */
+@keyframes slow-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.rotating-img {
+  animation: slow-rotate 30s linear infinite;
+}
+
+/* Carousel and chips styling */
 .carousel {
   display: flex;
-  gap: 12px;
   overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none; /* Hide scrollbar in Firefox */
-  touch-action: pan-x; /* Allow horizontal swipe */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;  /* Firefox */
+  padding: 0.5rem 0;
 }
 
 .carousel::-webkit-scrollbar {
-  display: none;
+  display: none;  /* Chrome, Safari, Opera */
 }
 
-.carousel-card {
-  background: linear-gradient(135deg, var(--cardColor, #f8f9fa), #fff);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+.carousel-item {
+  flex: 0 0 auto;
   scroll-snap-align: start;
+  width: 80%;
+  margin-right: 1rem;
 }
 
-.badge-new {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background-color: #ff3b3b;
-  color: white;
-  font-size: 0.65rem;
-  font-weight: bold;
-  padding: 2px 6px;
-  border-radius: 4px;
-  z-index: 10;
-}
-
-/* Chip styles for trending topics */
 .chips-row {
   display: flex;
-  gap: 8px;
   overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  touch-action: pan-x;
-  padding: 4px 0;
+  padding: 0.5rem 0;
 }
 
 .chips-row::-webkit-scrollbar {
@@ -93,24 +72,86 @@
 }
 
 .chip {
-  scroll-snap-align: start;
-  background-color: #f1f5f9;
-  border-radius: 100px;
-  padding: 6px 12px;
-  font-size: 0.875rem;
-  white-space: nowrap;
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  cursor: pointer;
-  transition: all 0.2s ease;
+  justify-content: center;
+  background-color: #f3f4f6;
+  color: #4b5563;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  margin-right: 0.5rem;
+  white-space: nowrap;
 }
 
-.chip:hover {
-  background-color: #e2e8f0;
+/* Flashcard animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Touch action utility class */
-.touch-action-pan-x {
-  touch-action: pan-x;
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.flashcard-enter {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.flashcard-pulse {
+  animation: pulse 0.6s ease-in-out;
+}
+
+.flashcard-swipe-left {
+  transform-origin: center right;
+  animation: swipeLeft 0.3s ease forwards;
+}
+
+.flashcard-swipe-right {
+  transform-origin: center left;
+  animation: swipeRight 0.3s ease forwards;
+}
+
+@keyframes swipeLeft {
+  from { transform: translateX(0) rotate(0); opacity: 1; }
+  to { transform: translateX(-100%) rotate(-5deg); opacity: 0; }
+}
+
+@keyframes swipeRight {
+  from { transform: translateX(0) rotate(0); opacity: 1; }
+  to { transform: translateX(100%) rotate(5deg); opacity: 0; }
+}
+
+/* Topic card animation */
+.topic-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.topic-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Card completion checkmark animation */
+@keyframes checkmark {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.check-animate {
+  animation: checkmark 0.3s ease-out forwards;
+}
+
+/* Topic icon background pulse */
+@keyframes bgPulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+.pulse-bg {
+  animation: bgPulse 2s ease-in-out infinite;
 }

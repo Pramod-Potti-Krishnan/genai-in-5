@@ -6,6 +6,10 @@ import { Audible } from "@shared/schema";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "../components/AuthProvider";
+import LeaderboardCard from "@/components/home/LeaderboardCard";
+import WeeklyPulseCarousel from "@/components/home/WeeklyPulseCarousel";
+import DailyFlashCarousel from "@/components/home/DailyFlashCarousel";
+import { HomeAudible } from "@/components/home/types";
 
 interface HomePageProps {
   playAudible: (audible: Audible) => void;
@@ -45,6 +49,23 @@ export default function HomePage({ playAudible }: HomePageProps) {
   
   if (!user) return null;
   
+  // Handler for playing home audibles
+  const handlePlayHomeAudible = (homeAudible: HomeAudible) => {
+    // Convert HomeAudible to Audible for compatibility with existing player
+    const audibleToPlay: Audible = {
+      id: parseInt(homeAudible.id),
+      title: homeAudible.title,
+      description: homeAudible.summary,
+      audioUrl: homeAudible.audioUrl,
+      coverImage: homeAudible.coverImage || null,
+      durationInSeconds: homeAudible.duration,
+      sectionId: 1, // Default section
+      createdAt: new Date()
+    };
+    
+    playAudible(audibleToPlay);
+  };
+  
   return (
     <div className="flex-1 pb-16">
       <header className="p-4 border-b">
@@ -52,6 +73,15 @@ export default function HomePage({ playAudible }: HomePageProps) {
       </header>
       
       <main className="p-4 space-y-6">
+        {/* Leaderboard Card */}
+        <LeaderboardCard />
+        
+        {/* Weekly Pulse */}
+        <WeeklyPulseCarousel playAudible={handlePlayHomeAudible} />
+        
+        {/* Daily Flash */}
+        <DailyFlashCarousel playAudible={handlePlayHomeAudible} />
+        
         {/* Next Up Card */}
         <section className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-800">Next Up</h2>

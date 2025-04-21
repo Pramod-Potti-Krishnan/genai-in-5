@@ -3,17 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { dailyFlashData } from "@/lib/leaderboard-data";
 import { formatDuration } from "@/lib/utils";
-import { Audible } from "@shared/schema";
+import { HomeAudible } from "./types";
 
 interface DailyFlashCardProps {
   flash: typeof dailyFlashData[0];
-  onClick: (audible: Audible) => void;
+  onClick: (audible: HomeAudible) => void;
 }
 
 const DailyFlashCard = ({ flash, onClick }: DailyFlashCardProps) => {
   const handleClick = () => {
     // Convert the flash to an Audible for the audio player
-    const audible: Audible = {
+    const audible: HomeAudible = {
       id: flash.id,
       title: flash.title,
       summary: flash.summary,
@@ -62,7 +62,7 @@ const DailyFlashCard = ({ flash, onClick }: DailyFlashCardProps) => {
 };
 
 interface DailyFlashCarouselProps {
-  playAudible: (audible: Audible) => void;
+  playAudible: (audible: HomeAudible) => void;
 }
 
 export default function DailyFlashCarousel({ playAudible }: DailyFlashCarouselProps) {

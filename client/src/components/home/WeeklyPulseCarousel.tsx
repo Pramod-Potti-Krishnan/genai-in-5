@@ -62,7 +62,7 @@ const WeeklyPulseCard = ({ pulse, onClick }: WeeklyPulseCardProps) => {
 };
 
 interface WeeklyPulseCarouselProps {
-  playAudible: (audible: Audible) => void;
+  playAudible: (audible: HomeAudible) => void;
 }
 
 export default function WeeklyPulseCarousel({ playAudible }: WeeklyPulseCarouselProps) {

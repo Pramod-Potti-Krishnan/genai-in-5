@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, Children, cloneElement, ReactElement } from 'react';
+import React, { useRef, useState, useEffect, Children, cloneElement, ReactElement, isValidElement } from 'react';
 import { cn } from '@/lib/utils';
 
 interface CarouselProps {
@@ -75,7 +75,7 @@ export function Carousel({
 
   // Apply consistent gap styling to child elements
   const childrenWithGap = Children.map(children, (child) => {
-    if (!React.isValidElement(child)) return child;
+    if (!isValidElement(child)) return child;
     
     return cloneElement(child as ReactElement, {
       style: {

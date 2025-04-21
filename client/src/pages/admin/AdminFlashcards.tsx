@@ -319,8 +319,8 @@ export function AdminFlashcards() {
           <TableHeader>
             <TableRow>
               <TableHead>Topic</TableHead>
-              <TableHead>Front (Question)</TableHead>
-              <TableHead>Back (Answer)</TableHead>
+              <TableHead>Headline</TableHead>
+              <TableHead>Bullets</TableHead>
               <TableHead>Image</TableHead>
               <TableHead className="w-[100px]">Actions</TableHead>
             </TableRow>
@@ -328,11 +328,28 @@ export function AdminFlashcards() {
           <TableBody>
             {flashcards.map((flashcard) => {
               const topic = topics.find(t => t.id === flashcard.topicId);
+              // Parse bullets if they're stored as a string
+              const bullets = Array.isArray(flashcard.bullets) 
+                ? flashcard.bullets 
+                : typeof flashcard.bullets === 'string'
+                  ? JSON.parse(flashcard.bullets)
+                  : [];
               return (
                 <TableRow key={flashcard.id}>
                   <TableCell>{topic?.title || 'Unknown'}</TableCell>
-                  <TableCell>{flashcard.frontText}</TableCell>
-                  <TableCell>{flashcard.backText}</TableCell>
+                  <TableCell>{flashcard.headline}</TableCell>
+                  <TableCell>
+                    {bullets.length > 0 ? (
+                      <ul className="list-disc list-inside text-sm">
+                        {bullets.slice(0, 2).map((bullet, idx) => (
+                          <li key={idx}>{bullet}</li>
+                        ))}
+                        {bullets.length > 2 && <li>...</li>}
+                      </ul>
+                    ) : (
+                      <span className="text-muted-foreground text-sm">No bullets</span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     {flashcard.imageUrl ? (
                       <img 

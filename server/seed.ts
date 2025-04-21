@@ -17,6 +17,7 @@ async function seedDatabase() {
       email: "admin@example.com",
       name: "Admin User",
       password: adminPassword,
+      avatarUrl: null,
       isAdmin: true
     }).onConflictDoNothing({ target: users.email });
     console.log("✅ Admin user created");
@@ -27,6 +28,7 @@ async function seedDatabase() {
       email: "user@example.com", 
       name: "Regular User",
       password: userPassword,
+      avatarUrl: null,
       isAdmin: false
     }).onConflictDoNothing({ target: users.email });
     console.log("✅ Regular user created");
@@ -202,8 +204,10 @@ async function seedDatabase() {
 
     for (const quiz of quizQuestionsData) {
       await db.insert(quizQuestions).values({
-        ...quiz,
-        options: JSON.stringify(quiz.options) as any
+        topicId: quiz.topicId,
+        question: quiz.question,
+        options: quiz.options,
+        correctIndex: quiz.correctIndex,
       }).onConflictDoNothing();
     }
     console.log("✅ Quiz questions created");

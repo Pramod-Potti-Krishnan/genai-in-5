@@ -62,7 +62,7 @@ async function seedDatabase() {
     ];
 
     for (const topic of topicData) {
-      await db.insert(topics).values(topic).onConflictDoNothing({ target: topics.title });
+      await db.insert(topics).values(topic);
     }
     console.log("✅ Topics created");
 
@@ -114,7 +114,7 @@ async function seedDatabase() {
     ];
 
     for (const audible of audiblesData) {
-      await db.insert(audibles).values(audible).onConflictDoNothing({ target: audibles.title });
+      await db.insert(audibles).values(audible);
     }
     console.log("✅ Audibles created");
 
@@ -159,7 +159,7 @@ async function seedDatabase() {
     ];
 
     for (const flashcard of flashcardsData) {
-      await db.insert(flashcards).values(flashcard).onConflictDoNothing();
+      await db.insert(flashcards).values(flashcard);
     }
     console.log("✅ Flashcards created");
 
@@ -208,7 +208,7 @@ async function seedDatabase() {
         question: quiz.question,
         options: quiz.options,
         correctIndex: quiz.correctIndex,
-      }).onConflictDoNothing();
+      });
     }
     console.log("✅ Quiz questions created");
 

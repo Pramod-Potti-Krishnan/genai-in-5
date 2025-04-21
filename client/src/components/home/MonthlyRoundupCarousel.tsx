@@ -15,13 +15,15 @@ const MonthlyRoundupCard = ({ roundup, onClick }: MonthlyRoundupCardProps) => {
   const handleClick = () => {
     // Convert the roundup to an Audible for the audio player
     const audible: HomeAudible = {
-      id: roundup.id,
+      id: Number(roundup.id) || 0,  // Convert string id to number
       title: roundup.title,
+      description: roundup.summary, // Use summary as description
       summary: roundup.summary,
-      duration: roundup.duration,
+      durationInSeconds: roundup.duration,
+      duration: roundup.duration,   // Provide both for compatibility
       coverImage: roundup.coverImage || null,
       audioUrl: roundup.audioUrl,
-      sectionId: "monthly-roundup"
+      sectionId: 0                  // Default section ID
     };
     
     onClick(audible);

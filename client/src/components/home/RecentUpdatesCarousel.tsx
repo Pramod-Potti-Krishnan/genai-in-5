@@ -14,13 +14,15 @@ const RecentUpdateCard = ({ update, onClick }: RecentUpdateCardProps) => {
   const handleClick = () => {
     // Convert the update to an Audible for the audio player
     const audible: HomeAudible = {
-      id: update.id,
+      id: Number(update.id) || 0,  // Convert string id to number
       title: update.title,
+      description: update.summary, // Use summary as description
       summary: update.summary,
-      duration: update.duration,
+      durationInSeconds: update.duration,
+      duration: update.duration,   // Provide both for compatibility
       coverImage: update.coverImage || null,
       audioUrl: update.audioUrl,
-      sectionId: "recent-updates"
+      sectionId: 0                 // Default section ID
     };
     
     onClick(audible);

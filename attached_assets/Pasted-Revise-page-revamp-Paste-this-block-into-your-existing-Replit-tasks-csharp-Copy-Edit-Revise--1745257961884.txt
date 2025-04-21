@@ -1,0 +1,95 @@
+Revise page revamp
+Paste this block into your existing Replit tasks.
+
+csharp
+Copy
+Edit
+## 📚 Revise Page 2.0 – Visual flashcard carousel
+
+### 1. Topic selector
+- Top of page: horizontal chip list (`TopicChips.vue`).
+- Chips scrollable; active chip = highlighted.
+- Clicking chip sets `currentTopicId` (store in local state).
+
+### 2. Data model update
+```js
+// flashcards.json
+{
+  topicId: "genai-foundations",
+  cards: [
+    {
+      id:"llm-intro",
+      img:"https://source.unsplash.com/400x240/?ai,brain",  // placeholder
+      headline:"LLM Basics",
+      bullets:[
+        "LLMs predict the next token in sequence.",
+        "Transformer attention captures context.",
+        "Can perform multi‑task zero‑shot."
+      ],
+      reviewed:false
+    },
+    ...
+  ]
+}
+3. Carousel per topic
+Use Swiper.js or pure CSS scroll-snap to build horizontal card carousel (FlashcardCarousel.vue).
+
+slidesPerView=1, spaceBetween=16, pagination.dots=true.
+
+4. Flashcard component
+Front face:
+
+Full‑bleed img with dark gradient overlay.
+
+Title centered (headline).
+
+Progress ring top‑right (component <ProgressRing :percent="reviewed?100:0" />).
+
+Back face (flip on tap):
+
+White background, bullet list, “Mark Reviewed” button.
+
+Flip effect: transform:rotateY(180deg) with perspective.
+
+5. Review logic
+js
+Copy
+Edit
+function markReviewed(card){
+  card.reviewed = true;
+  // optional: persist to localStorage
+  swiper.slideNext();
+}
+6. Review Streak badge
+Below the chips:
+
+html
+Copy
+Edit
+<div class="streak-badge">🔥 {{streak}}‑day streak</div>
+Mock streak = 3.
+
+7. Styling guidelines
+Card size: 90 vw × 55 vh (max 350 × 220 px).
+
+Hide scrollbar on carousel; enable swipe (touch-action:pan-x).
+
+Dot indicators below carousel.
+
+8. Accessibility
+Ensure tap targets ≥ 44 px.
+
+Add aria-label="flip card" to card container.
+
+9. Scope
+Front‑end only; placeholder images OK.
+
+Keep bottom nav & mini‑player unaffected.
+
+Deliverable: flashy Revise page with topic chips, swipeable image cards, flip interaction, review progress, and streak badge.
+
+csharp
+Copy
+Edit
+
+These tweaks will transform Revise from a static bullet list into a vibrant, interactive memory jogger that feels great on mobile.

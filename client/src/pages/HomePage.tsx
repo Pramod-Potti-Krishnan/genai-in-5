@@ -12,6 +12,7 @@ import WeeklyPulseCarousel from "@/components/home/WeeklyPulseCarousel";
 import DailyFlashCarousel from "@/components/home/DailyFlashCarousel";
 import MonthlyRoundupCarousel from "@/components/home/MonthlyRoundupCarousel";
 import RecentUpdatesCarousel from "@/components/home/RecentUpdatesCarousel";
+import TrendingTopicsCarousel from "@/components/home/TrendingTopicsCarousel";
 import GreetingBanner from "@/components/home/GreetingBanner";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { HomeAudible } from "@/components/home/types";
@@ -199,13 +200,7 @@ export default function HomePage({ playAudible }: HomePageProps) {
               Trending Topics
             </span>
           </h2>
-          <div className="chips-row" tabIndex={0}>
-            {trendingTopics.map((tag, index) => (
-              <div key={index} className="chip">
-                {tag}
-              </div>
-            ))}
-          </div>
+          <TrendingTopicsCarousel playAudible={handlePlayHomeAudible} />
         </section>
         
         {/* Progress Summary - with ring instead of bar */}

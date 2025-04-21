@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet';
-import { Flashcard as FlashcardType } from '../types';
 import Flashcard from '../components/revise/Flashcard';
 import TopicChips from '../components/revise/TopicChips';
 import { flashcards } from '../lib/mockData';
@@ -75,9 +73,9 @@ export default function Revise() {
   
   return (
     <div className="pb-20">
-      <Helmet>
-        <title>Review Flashcards | GenAI</title>
-      </Helmet>
+      <div className="screen-title">
+        {/* Title would normally be in Helmet */}
+      </div>
       
       <div className="sticky top-0 bg-background z-10">
         <div className="p-4 flex items-center justify-between border-b">

@@ -8,10 +8,9 @@ import { HomeAudible } from "./types";
 interface WeeklyPulseCardProps {
   pulse: typeof weeklyPulseData[0];
   onClick: (audible: HomeAudible) => void;
-  className?: string;
 }
 
-const WeeklyPulseCard = ({ pulse, onClick, className = "" }: WeeklyPulseCardProps) => {
+const WeeklyPulseCard = ({ pulse, onClick }: WeeklyPulseCardProps) => {
   const handleClick = () => {
     // Convert the pulse to an Audible for the audio player
     const audible: HomeAudible = {
@@ -28,7 +27,7 @@ const WeeklyPulseCard = ({ pulse, onClick, className = "" }: WeeklyPulseCardProp
   };
 
   return (
-    <Card className={`min-w-[280px] max-w-[280px] h-[200px] snap-center mr-4 flex flex-col ${className}`}>
+    <Card className="min-w-[280px] max-w-[280px] h-[200px] snap-center mr-4 flex flex-col">
       <CardContent className="p-0 flex flex-col h-full">
         <div 
           className="h-24 w-full bg-gradient-to-r from-purple-600 to-purple-400 flex items-center justify-center"
@@ -69,9 +68,9 @@ interface WeeklyPulseCarouselProps {
 export default function WeeklyPulseCarousel({ playAudible }: WeeklyPulseCarouselProps) {
   return (
     <div className="mb-6">
-      <div className="flex overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 carousel touch-action-pan-x">
+      <div className="flex overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
         {weeklyPulseData.map((pulse) => (
-          <WeeklyPulseCard key={pulse.id} pulse={pulse} onClick={playAudible} className="snap-start" />
+          <WeeklyPulseCard key={pulse.id} pulse={pulse} onClick={playAudible} />
         ))}
       </div>
     </div>

@@ -53,16 +53,16 @@ export function AdminFlashcards() {
   const form = useForm({
     resolver: zodResolver(insertFlashcardSchema),
     defaultValues: {
-      frontText: '',
-      backText: '',
+      headline: '',
+      bullets: [],
       topicId: 0
     }
   });
 
   const resetForm = () => {
     form.reset({
-      frontText: '',
-      backText: '',
+      headline: '',
+      bullets: [],
       topicId: 0
     });
     setEditingFlashcard(null);
@@ -158,8 +158,19 @@ export function AdminFlashcards() {
 
   const onSubmit = (values: any) => {
     const formData = new FormData();
-    formData.append('frontText', values.frontText);
-    formData.append('backText', values.backText);
+    formData.append('headline', values.headline);
+    
+    // Handle bullets as array or stringify if needed
+    if (Array.isArray(values.bullets)) {
+      formData.append('bullets', JSON.stringify(values.bullets));
+    } else if (typeof values.bullets === 'string') {
+      // Handle case where it might be a comma-separated string
+      const bulletsArray = values.bullets.split(',').map((b: string) => b.trim()).filter(Boolean);
+      formData.append('bullets', JSON.stringify(bulletsArray));
+    } else {
+      formData.append('bullets', '[]');
+    }
+    
     formData.append('topicId', values.topicId?.toString() || '0');
     
     if (imageFile) {
@@ -174,9 +185,15 @@ export function AdminFlashcards() {
   };
 
   const handleEdit = (flashcard: Flashcard) => {
+    const bullets = Array.isArray(flashcard.bullets) 
+      ? flashcard.bullets 
+      : typeof flashcard.bullets === 'string'
+        ? JSON.parse(flashcard.bullets)
+        : [];
+        
     form.reset({
-      frontText: flashcard.frontText,
-      backText: flashcard.backText,
+      headline: flashcard.headline,
+      bullets: bullets,
       topicId: flashcard.topicId
     });
     setEditingFlashcard(flashcard);
@@ -236,20 +253,24 @@ export function AdminFlashcards() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="frontText">Front Text (Question)</Label>
+                <Label htmlFor="headline">Headline (Question)</Label>
                 <Textarea
-                  id="frontText"
-                  {...form.register('frontText')}
+                  id="headline"
+                  {...form.register('headline')}
                   rows={3}
                 />
               </div>
               <div>
-                <Label htmlFor="backText">Back Text (Answer)</Label>
+                <Label htmlFor="bullets">Bullets (Points to Remember)</Label>
                 <Textarea
-                  id="backText"
-                  {...form.register('backText')}
-                  rows={3}
+                  id="bullets"
+                  {...form.register('bullets')}
+                  rows={4}
+                  placeholder="Enter bullet points separated by commas"
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Enter multiple bullet points separated by commas
+                </p>
               </div>
               <div>
                 <Label htmlFor="imageUrl">Image</Label>

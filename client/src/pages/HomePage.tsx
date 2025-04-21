@@ -75,7 +75,10 @@ export default function HomePage({ playAudible }: HomePageProps) {
       </header>
       
       <main className="p-4 space-y-6">
-        {/* Next Up Card - First in the order */}
+        {/* Global Leaderboard - First in the order */}
+        <LeaderboardCard />
+        
+        {/* Next Up Card - Second in the order */}
         <section className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-800">Next Up</h2>
           {nextAudible && (
@@ -107,9 +110,6 @@ export default function HomePage({ playAudible }: HomePageProps) {
             </Card>
           )}
         </section>
-        
-        {/* Global Leaderboard - Second in the order */}
-        <LeaderboardCard />
         
         {/* Weekly Pulse - Third in the order */}
         <WeeklyPulseCarousel playAudible={handlePlayHomeAudible} />

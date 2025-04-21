@@ -1,134 +1,261 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Express } from "express";
+import express, { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User as SelectUser } from "@shared/schema";
+import { User as DbUser } from "@shared/schema";
+import jwt from "jsonwebtoken";
 
+// Define types for Express User
 declare global {
   namespace Express {
-    interface User extends SelectUser {}
+    // Define our custom user interface
+    interface User {
+      id: number;
+      email: string;
+      name: string;
+      avatarUrl?: string | null;
+      isAdmin?: boolean;
+    }
   }
 }
 
+// Environment variables
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key';
+const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-session-secret';
+
+// Convert callback-based scrypt to Promise-based
 const scryptAsync = promisify(scrypt);
 
-async function hashPassword(password: string) {
+// Generate JWT token for a user
+export function generateToken(user: User): string {
+  const payload = {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    isAdmin: user.isAdmin || false,
+  };
+  
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+}
+
+// Password handling functions
+export async function hashPassword(password: string): Promise<string> {
   const salt = randomBytes(16).toString("hex");
   const buf = (await scryptAsync(password, salt, 64)) as Buffer;
   return `${buf.toString("hex")}.${salt}`;
 }
 
-async function comparePasswords(supplied: string, stored: string) {
+export async function comparePasswords(supplied: string, stored: string): Promise<boolean> {
   const [hashed, salt] = stored.split(".");
   const hashedBuf = Buffer.from(hashed, "hex");
   const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
+// Setup authentication for Express
 export function setupAuth(app: Express) {
+  // Session middleware configuration
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || "dev-secret-key",
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: storage.sessionStore,
     cookie: {
-      secure: false, // set to true in production
-      maxAge: 1000 * 60 * 60 * 24 * 7 // One week
-    }
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    },
+    store: storage.sessionStore,
   };
 
-  app.set("trust proxy", 1);
+  // Production settings for secure cookies
+  if (process.env.NODE_ENV === 'production') {
+    app.set("trust proxy", 1);
+  }
+  
+  // Set up session and passport
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // Configure passport to use local strategy (username/password)
   passport.use(
-    new LocalStrategy({
-      usernameField: 'email',
-      passwordField: 'password'
-    }, async (email, password, done) => {
-      try {
-        const user = await storage.getUserByUsername(email);
-        if (!user) {
-          return done(null, false, { message: 'Invalid email or password' });
+    new LocalStrategy(
+      {
+        usernameField: 'email',
+        passwordField: 'password',
+      },
+      async (email, password, done) => {
+        try {
+          const user = await storage.getUserByEmail(email);
+          if (!user || !(await comparePasswords(password, user.password))) {
+            return done(null, false, { message: 'Invalid email or password' });
+          }
+          return done(null, user);
+        } catch (error) {
+          return done(error);
         }
-        
-        const isValid = await comparePasswords(password, user.password);
-        if (!isValid) {
-          return done(null, false, { message: 'Invalid email or password' });
-        }
-        
-        return done(null, user);
-      } catch (err) {
-        return done(err);
       }
-    }),
+    )
   );
 
-  passport.serializeUser((user, done) => done(null, user.id));
+  // Serialize user to session
+  passport.serializeUser((user, done) => {
+    done(null, user.id);
+  });
+
+  // Deserialize user from session
   passport.deserializeUser(async (id: number, done) => {
     try {
       const user = await storage.getUser(id);
       done(null, user);
-    } catch (err) {
-      done(err);
+    } catch (error) {
+      done(error);
     }
   });
 
-  app.post("/api/register", async (req, res, next) => {
+  // Registration endpoint
+  app.post("/api/auth/register", async (req, res, next) => {
     try {
-      const { name, email, password } = req.body;
+      const { email, password, name } = req.body;
       
-      const existingUser = await storage.getUserByUsername(email);
+      // Check if user exists
+      const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
-        return res.status(400).json({ message: "Email already in use" });
+        return res.status(400).json({ error: "Email already registered" });
       }
 
+      // Create new user with hashed password
       const hashedPassword = await hashPassword(password);
-      
       const user = await storage.createUser({
-        name,
         email,
-        password: hashedPassword
+        name,
+        password: hashedPassword,
       });
 
+      // Generate JWT
+      const token = generateToken(user);
+
+      // Login the user (create session)
       req.login(user, (err) => {
         if (err) return next(err);
-        return res.status(201).json({ id: user.id, name: user.name, email: user.email });
+        
+        // Return user data and token
+        return res.status(201).json({
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            avatarUrl: user.avatarUrl,
+          },
+          token,
+        });
       });
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   });
 
-  app.post("/api/login", (req, res, next) => {
-    passport.authenticate('local', (err: any, user: SelectUser | false, info: { message?: string }) => {
+  // Login endpoint
+  app.post("/api/auth/login", (req, res, next) => {
+    passport.authenticate("local", (err, user, info) => {
       if (err) return next(err);
-      if (!user) return res.status(400).json({ message: info?.message || 'Login failed' });
+      if (!user) {
+        return res.status(401).json({ error: info?.message || "Authentication failed" });
+      }
       
       req.login(user, (err) => {
         if (err) return next(err);
-        return res.json({ id: user.id, name: user.name, email: user.email });
+        
+        // Generate JWT
+        const token = generateToken(user);
+        
+        // Return user data and token
+        return res.json({
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            avatarUrl: user.avatarUrl,
+          },
+          token,
+        });
       });
     })(req, res, next);
   });
 
-  app.post("/api/logout", (req, res, next) => {
+  // Logout endpoint
+  app.post("/api/auth/logout", (req, res, next) => {
     req.logout((err) => {
       if (err) return next(err);
-      res.status(200).json({ message: 'Logged out successfully' });
+      req.session.destroy((err) => {
+        if (err) return next(err);
+        res.clearCookie('connect.sid');
+        return res.sendStatus(200);
+      });
     });
   });
 
-  app.get("/api/user", (req, res) => {
+  // Current user endpoint
+  app.get("/api/auth/me", (req, res) => {
     if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: 'Not authenticated' });
+      return res.status(401).json({ error: "Not authenticated" });
     }
     
-    const { id, name, email } = req.user as SelectUser;
-    res.json({ id, name, email });
+    // Return user data (excluding password)
+    const user = req.user as User;
+    res.json({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      avatarUrl: user.avatarUrl,
+      isAdmin: user.isAdmin,
+    });
   });
+
+  // Refresh token endpoint
+  app.post("/api/auth/refresh-token", (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    
+    const user = req.user as User;
+    const token = generateToken(user);
+    
+    res.json({ token });
+  });
+}
+
+// Middleware to check if user is authenticated
+export function isAuthenticated(req: Request, res: Response, next: NextFunction) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ error: "Unauthorized" });
+}
+
+// Middleware to check if user is an admin
+export function isAdmin(req: Request, res: Response, next: NextFunction) {
+  if (req.isAuthenticated() && (req.user as Express.User).isAdmin) {
+    return next();
+  }
+  res.status(403).json({ error: "Forbidden" });
+}
+
+// JWT Authentication middleware
+export function jwtAuth(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded as Express.User;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid token' });
+  }
 }

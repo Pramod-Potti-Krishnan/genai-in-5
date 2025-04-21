@@ -27,10 +27,10 @@ const WeeklyPulseCard = ({ pulse, onClick }: WeeklyPulseCardProps) => {
   };
 
   return (
-    <Card className="min-w-[260px] max-w-[260px] h-[180px] snap-center mr-4 flex flex-col">
+    <Card className="min-w-[280px] max-w-[280px] h-[200px] snap-center mr-4 flex flex-col">
       <CardContent className="p-0 flex flex-col h-full">
         <div 
-          className="h-20 w-full bg-gradient-to-r from-purple-600 to-purple-400 flex items-center justify-center"
+          className="h-24 w-full bg-gradient-to-r from-purple-600 to-purple-400 flex items-center justify-center"
           style={{
             backgroundImage: pulse.coverImage ? `url(${pulse.coverImage})` : undefined,
             backgroundSize: 'cover',

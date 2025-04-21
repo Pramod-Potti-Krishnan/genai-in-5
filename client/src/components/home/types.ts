@@ -2,8 +2,8 @@ export interface HomeAudible {
   id: string;
   title: string;
   summary: string;
-  duration: number;
-  coverImage?: string | null;
+  duration: number; // in seconds
+  coverImage: string | null;
   audioUrl: string;
   sectionId: string;
 }

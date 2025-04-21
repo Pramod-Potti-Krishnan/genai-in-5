@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { AudioPlayerState } from "../App";
 import { Button } from "@/components/ui/button";
 import { useLocalStorage } from "../lib/useLocalStorage";
-import { defaultUserProgress, UserProgressData } from "../lib/mockData";
+import { defaultUserProgress, UserProgressData, sections } from "../lib/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "../components/AuthProvider";
 

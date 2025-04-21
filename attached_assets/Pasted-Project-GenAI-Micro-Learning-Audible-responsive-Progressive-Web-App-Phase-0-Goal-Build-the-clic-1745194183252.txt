@@ -1,0 +1,87 @@
+Project: GenAI Micro‑Learning Audible – responsive Progressive Web App.
+Phase 0 Goal: Build the clickable front‑end so we can walk through the entire learner journey on a phone. Use mock JSON or in‑memory arrays for all data.
+Core change: Remove the previous Q&A screen and replace global navigation with five persistent bottom‑tabs: Home · Learn · Revise · Trivia · Progress.
+
+1 · Global navigation (visible on every page)
+
+Tab	Icon hint	Primary purpose
+Home	🏠	“At‑a‑glance” hub: next audible, overall progress, recent audibles.
+Learn	🎧	Browse audible sections → audibles. Each audible opens a dedicated audio‑player page.
+Revise	📝	Swipeable memory‑card carousel for completed audibles.
+Trivia	❓	10‑question quizzes pulled from topics the user has studied (or other categories the user picks).
+Progress	📊	Visual dashboards combining listen %, revision streaks, trivia scores.
+Bottom bar must be sticky, touch‑friendly (≥ 44 px height), and show the active tab state.
+
+2 · Screen‑by‑screen requirements
+2.1 Login & Registration (same as earlier)
+Email / password plus stub buttons for Google & Facebook login.
+
+Registration collects name, email, password, terms checkbox.
+
+2.2 Home
+Next Up card – shows the next audible in the user’s chosen path with Play button.
+
+Progress summary – horizontal progress bar (e.g., 45 % overall).
+
+Recent Audibles – scrollable chips or small cards of audibles recently added to the catalogue.
+
+2.3 Learn
+Section list – accordion or cards for each topic (e.g., “GenAI Foundations”, “AI in Finance”).
+
+Clicking a section reveals Audible list (title + 5‑line blurb + length).
+
+Clicking an audible opens Audio Player page: cover art placeholder, play/pause, skip‑10‑sec, speed toggle, and “Mark Complete”.
+
+2.4 Revise
+Carousel of memory cards – one card per completed audible.
+
+Each card shows title + 3 bullet‑point summary + “Mark Reviewed” toggle.
+
+Swipe left/right to move through cards.
+
+2.5 Trivia
+Category grid – cards like “GenAI Basics”, “Prompt Engineering”, etc.
+
+Selecting a category loads a 10‑question quiz (MCQ).
+
+After submission display score, simple feedback (“Great job – 8/10!”).
+
+Store score in local state so it feeds the Progress screen.
+
+2.6 Progress
+Listen progress – bar per section (e.g., 3 / 10 audibles).
+
+Revision streak – days or cards reviewed.
+
+Trivia scores – best score per category or latest quiz score.
+
+3 · UX / design notes
+Mobile‑first: single‑column layouts; avoid tiny text.
+
+Sticky mini‑player: when audio is playing, show a compact bar (title + play/pause) that remains at bottom above the nav.
+
+Colour scheme: clean light mode; dark mode optional.
+
+States: loading spinners, empty states (“No audibles yet”), error banners.
+
+4 · Mock data to ship with prototype
+topics.json – array of 6 sections, each with 10 audibles (id, title, duration, summary).
+
+flashcards.json – one flashcard per audible.
+
+trivia.json – questions per category.
+
+A dummy 5‑sec public MP3 URL for all audio.
+
+5 · Deliverables
+Replit project with:
+
+Routing between all screens + persistent bottom nav.
+
+Basic state management for progress, reviewed cards, quiz scores (local storage is fine).
+
+README explaining how to run demo.
+
+No real authentication, database, or audio streaming required yet – placeholders only.
+
+Instruction to model / dev: Focus on UX flow and responsiveness. Code should be clean and componentized so we can replace mock data with real APIs in the next phase.

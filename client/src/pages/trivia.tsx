@@ -31,6 +31,19 @@ enum QuizState {
   QUIZ_RESULTS = 'quiz-results'
 }
 
+// Quiz state interface
+interface QuizStateData {
+  currentIndex: number;
+  timeLeft: number;
+  selectedOption: number | null;
+  correctCount: number;
+  wrongCount: number;
+  skippedCount: number;
+  showAnswer: boolean;
+  isAnswerCorrect: boolean;
+  streak: number;
+}
+
 export default function Trivia() {
   const { triviaCategories, progress, saveTriviaScore } = useAppContext();
   
@@ -39,7 +52,23 @@ export default function Trivia() {
   const [questions, setQuestions] = useState<TriviaQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
-  const [score, setScore] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [quizData, setQuizData] = useState<QuizStateData>({
+    currentIndex: 0,
+    timeLeft: 10,
+    selectedOption: null,
+    correctCount: 0,
+    wrongCount: 0,
+    skippedCount: 0,
+    showAnswer: false,
+    isAnswerCorrect: false,
+    streak: 0
+  });
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [timerActive, setTimerActive] = useState(true);
+  
+  // Calculate total score (for backward compatibility)
+  const score = quizData.correctCount;
   
   // Get the best score for a category
   const getBestScore = (categoryId: string): number | undefined => {
@@ -54,37 +83,107 @@ export default function Trivia() {
     setQuestions(categoryQuestions);
     setCurrentQuestionIndex(0);
     setSelectedAnswers(new Array(categoryQuestions.length).fill(-1));
-    setScore(0);
+    setQuizData({
+      currentIndex: 0,
+      timeLeft: 10,
+      selectedOption: null,
+      correctCount: 0,
+      wrongCount: 0,
+      skippedCount: 0,
+      showAnswer: false,
+      isAnswerCorrect: false,
+      streak: 0
+    });
+    setShowAnswer(false);
+    setTimerActive(true);
     setQuizState(QuizState.QUIZ_INTERFACE);
   };
   
   // Handle option selection
   const handleSelectOption = (optionIndex: number) => {
+    // If already showing answer, don't allow selection
+    if (showAnswer) return;
+    
+    // Update selected answer
     const newSelectedAnswers = [...selectedAnswers];
     newSelectedAnswers[currentQuestionIndex] = optionIndex;
     setSelectedAnswers(newSelectedAnswers);
+    
+    // Stop timer and show answer
+    setTimerActive(false);
+    setShowAnswer(true);
+    
+    const currentQuestion = questions[currentQuestionIndex];
+    const isCorrect = optionIndex === currentQuestion.correctAnswer;
+    
+    // Update quiz data
+    setQuizData(prev => ({
+      ...prev,
+      selectedOption: optionIndex,
+      showAnswer: true,
+      isAnswerCorrect: isCorrect,
+      correctCount: isCorrect ? prev.correctCount + 1 : prev.correctCount,
+      wrongCount: !isCorrect ? prev.wrongCount + 1 : prev.wrongCount,
+      streak: isCorrect ? prev.streak + 1 : 0
+    }));
+    
+    // Show confetti for correct answers
+    if (isCorrect) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 1500);
+    }
+    
+    // Auto-advance after delay
+    setTimeout(() => {
+      if (currentQuestionIndex === questions.length - 1) {
+        finishQuiz();
+      } else {
+        goToNextQuestion();
+      }
+    }, 1500);
+  };
+  
+  // Handle timer timeout
+  const handleTimeUp = () => {
+    // Mark as skipped
+    const newSelectedAnswers = [...selectedAnswers];
+    newSelectedAnswers[currentQuestionIndex] = -2; // Special value for skipped
+    setSelectedAnswers(newSelectedAnswers);
+    
+    setShowAnswer(true);
+    setQuizData(prev => ({
+      ...prev,
+      skippedCount: prev.skippedCount + 1,
+      showAnswer: true,
+      streak: 0 // Reset streak on skip
+    }));
+    
+    // Auto-advance after delay
+    setTimeout(() => {
+      if (currentQuestionIndex === questions.length - 1) {
+        finishQuiz();
+      } else {
+        goToNextQuestion();
+      }
+    }, 1500);
   };
   
   // Move to the next question or end the quiz
   const goToNextQuestion = () => {
-    if (currentQuestionIndex === questions.length - 1) {
-      finishQuiz();
-    } else {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    }
+    setCurrentQuestionIndex(currentQuestionIndex + 1);
+    setShowAnswer(false);
+    setTimerActive(true);
+    setQuizData(prev => ({
+      ...prev,
+      timeLeft: 10,
+      selectedOption: null,
+      showAnswer: false
+    }));
   };
   
   // Finish the quiz and calculate score
   const finishQuiz = () => {
-    let correctAnswers = 0;
-    
-    questions.forEach((question, index) => {
-      if (selectedAnswers[index] === question.correctAnswer) {
-        correctAnswers++;
-      }
-    });
-    
-    setScore(correctAnswers);
+    const correctAnswers = quizData.correctCount;
     
     if (selectedCategory) {
       saveTriviaScore(selectedCategory.id, correctAnswers);
@@ -100,7 +199,17 @@ export default function Trivia() {
     setQuestions([]);
     setCurrentQuestionIndex(0);
     setSelectedAnswers([]);
-    setScore(0);
+    setQuizData({
+      currentIndex: 0,
+      timeLeft: 10,
+      selectedOption: null,
+      correctCount: 0,
+      wrongCount: 0,
+      skippedCount: 0,
+      showAnswer: false,
+      isAnswerCorrect: false,
+      streak: 0
+    });
   };
   
   // Try the quiz again
@@ -158,22 +267,41 @@ export default function Trivia() {
         {/* Quiz Interface */}
         {quizState === QuizState.QUIZ_INTERFACE && currentQuestion && selectedCategory && (
           <>
+            {/* Show confetti effect when answering correctly */}
+            <ConfettiEffect active={showConfetti} />
+            
             <Card className="mb-4">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-medium text-gray-900">{selectedCategory.title} Quiz</h2>
-                  <span className="text-sm text-gray-600">
-                    Question <span>{currentQuestionIndex + 1}</span>/{questions.length}
+                  <div className="flex items-center">
+                    <h2 className="font-medium text-gray-900 mr-3">{selectedCategory.title} Quiz</h2>
+                    {/* Score chip */}
+                    <div className="flex items-center text-xs px-3 py-1 rounded-full bg-gray-100">
+                      <span className="text-green-600 font-semibold mr-1">{quizData.correctCount} ✓</span>
+                      {quizData.wrongCount > 0 && <span className="text-red-600 font-semibold mx-1">{quizData.wrongCount} ✖</span>}
+                      {quizData.skippedCount > 0 && <span className="text-orange-500 font-semibold ml-1">{quizData.skippedCount} ⏱</span>}
+                    </div>
+                  </div>
+                  <span className="text-sm text-gray-600 font-medium">
+                    {currentQuestionIndex + 1}/{questions.length}
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                   <div
-                    className="bg-primary-500 h-1.5 rounded-full"
+                    className="bg-primary-500 h-1.5 rounded-full transition-all duration-300"
                     style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
                   ></div>
                 </div>
               </CardContent>
             </Card>
+            
+            <div className="flex justify-center mb-3">
+              <CountdownTimer 
+                initialTime={10} 
+                onTimeUp={handleTimeUp} 
+                isActive={timerActive && !showAnswer} 
+              />
+            </div>
             
             <Card className="mb-6">
               <CardContent className="p-6">
@@ -186,6 +314,9 @@ export default function Trivia() {
                       option={option}
                       index={index}
                       selectedIndex={selectedAnswers[currentQuestionIndex]}
+                      correctIndex={showAnswer ? currentQuestion.correctAnswer : undefined}
+                      showAnswer={showAnswer}
+                      disabled={showAnswer}
                       onSelect={handleSelectOption}
                     />
                   ))}
@@ -193,22 +324,33 @@ export default function Trivia() {
               </CardContent>
             </Card>
             
-            <Button
-              className="w-full py-3 mb-6"
-              onClick={goToNextQuestion}
-              disabled={selectedAnswers[currentQuestionIndex] === -1}
-            >
-              {currentQuestionIndex === questions.length - 1 ? "Submit Quiz" : "Next Question"}
-            </Button>
+            {/* Only show Next button when showing answer */}
+            {showAnswer && (
+              <Button
+                className="w-full py-3 mb-6"
+                onClick={() => {
+                  if (currentQuestionIndex === questions.length - 1) {
+                    finishQuiz();
+                  } else {
+                    goToNextQuestion();
+                  }
+                }}
+              >
+                {currentQuestionIndex === questions.length - 1 ? "See Results" : "Next Question"}
+              </Button>
+            )}
             
-            <Button
-              variant="ghost"
-              className="text-primary-500 font-medium w-full py-2 hover:text-primary-600 flex items-center justify-center"
-              onClick={resetQuiz}
-            >
-              <ChevronLeft className="h-5 w-5 mr-1" />
-              Back to Categories
-            </Button>
+            {/* Only show back button if not showing answer */}
+            {!showAnswer && (
+              <Button
+                variant="ghost"
+                className="text-primary-500 font-medium w-full py-2 hover:text-primary-600 flex items-center justify-center"
+                onClick={resetQuiz}
+              >
+                <ChevronLeft className="h-5 w-5 mr-1" />
+                Back to Categories
+              </Button>
+            )}
           </>
         )}
         
@@ -217,52 +359,92 @@ export default function Trivia() {
           <Card className="mb-6">
             <CardContent className="p-6 text-center">
               <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-primary-100 text-primary-600 mb-4">
-                <CheckCircle className="h-10 w-10" />
+                {quizData.correctCount > questions.length / 2 ? (
+                  <Award className="h-10 w-10" />
+                ) : (
+                  <CheckCircle className="h-10 w-10" />
+                )}
               </div>
               
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Great job!</h2>
-              <p className="text-gray-600 mb-4">
-                You scored {score} out of {questions.length}
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {quizData.correctCount >= questions.length ? "Perfect!" : 
+                 quizData.correctCount >= questions.length * 0.7 ? "Great job!" : 
+                 quizData.correctCount >= questions.length * 0.5 ? "Well done!" : "Good effort!"}
+              </h2>
+              
+              <p className="text-gray-600 mb-2">
+                You scored {quizData.correctCount} out of {questions.length}
               </p>
+              
+              {/* Add a streak bonus if applicable */}
+              {quizData.streak >= 3 && (
+                <p className="text-green-600 text-sm font-medium mb-4">
+                  +{Math.floor(quizData.streak/3)} point streak bonus!
+                </p>
+              )}
               
               <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
                 <div
-                  className="bg-primary-500 h-2.5 rounded-full"
-                  style={{ width: `${(score / questions.length) * 100}%` }}
+                  className="bg-primary-500 h-2.5 rounded-full transition-all duration-1000 ease-out"
+                  style={{ width: `${(quizData.correctCount / questions.length) * 100}%` }}
                 ></div>
               </div>
               
               <div className="text-left mb-6">
                 <h3 className="font-medium text-gray-900 mb-2">Performance breakdown</h3>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-full bg-green-100 text-green-500 flex items-center justify-center flex-shrink-0 mr-3">
                       <CheckCircle className="h-5 w-5" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900">Correct answers</p>
-                      <p className="text-xs text-gray-500">{score} questions</p>
+                      <p className="text-xs text-gray-500">{quizData.correctCount} questions</p>
                     </div>
                   </div>
                   
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center flex-shrink-0 mr-3">
-                      <XCircle className="h-5 w-5" />
+                  {quizData.wrongCount > 0 && (
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center flex-shrink-0 mr-3">
+                        <XCircle className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">Incorrect answers</p>
+                        <p className="text-xs text-gray-500">{quizData.wrongCount} questions</p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">Incorrect answers</p>
-                      <p className="text-xs text-gray-500">{questions.length - score} questions</p>
+                  )}
+                  
+                  {quizData.skippedCount > 0 && (
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center flex-shrink-0 mr-3">
+                        <Timer className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">Skipped (time ran out)</p>
+                        <p className="text-xs text-gray-500">{quizData.skippedCount} questions</p>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
               
-              <Button
-                className="w-full py-3 mb-3"
-                onClick={tryAgain}
-              >
-                Try Again
-              </Button>
+              <div className="flex space-x-3 mb-6">
+                <Button
+                  className="flex-1 py-3"
+                  onClick={tryAgain}
+                  variant="outline"
+                >
+                  Review Answers
+                </Button>
+                
+                <Button
+                  className="flex-1 py-3"
+                  onClick={tryAgain}
+                >
+                  Try Again
+                </Button>
+              </div>
               
               <Button
                 variant="ghost"

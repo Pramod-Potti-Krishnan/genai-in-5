@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Timer } from 'lucide-react';
 
 interface CountdownTimerProps {
   initialTime: number; // in seconds
@@ -7,73 +8,74 @@ interface CountdownTimerProps {
 }
 
 export default function CountdownTimer({ initialTime, onTimeUp, isActive }: CountdownTimerProps) {
-  const [timeLeft, setTimeLeft] = useState(initialTime);
+  const [time, setTime] = useState(initialTime);
   
-  // Reset timer when initialTime changes or component unmounts
-  useEffect(() => {
-    setTimeLeft(initialTime);
-  }, [initialTime]);
-  
-  // Timer logic
   useEffect(() => {
     if (!isActive) return;
     
-    if (timeLeft <= 0) {
-      onTimeUp();
-      return;
-    }
-    
     const timer = setInterval(() => {
-      setTimeLeft((prevTime) => prevTime - 1);
+      setTime((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timer);
+          onTimeUp();
+          return 0;
+        }
+        return prevTime - 1;
+      });
     }, 1000);
     
     return () => clearInterval(timer);
-  }, [timeLeft, onTimeUp, isActive]);
+  }, [isActive, onTimeUp]);
   
-  // Calculate color based on time left
+  // Reset timer when isActive changes from false to true
+  useEffect(() => {
+    if (isActive) {
+      setTime(initialTime);
+    }
+  }, [isActive, initialTime]);
+  
+  // Determine color based on remaining time
   const getTimerColor = () => {
-    const percentLeft = (timeLeft / initialTime) * 100;
-    if (percentLeft > 65) return 'bg-green-500';
-    if (percentLeft > 30) return 'bg-orange-500';
-    return 'bg-red-500';
+    if (time > initialTime * 0.6) return 'text-green-500';
+    if (time > initialTime * 0.3) return 'text-yellow-500';
+    return 'text-red-500';
   };
   
+  // Calculate percentage for the progress circle
+  const circumference = 2 * Math.PI * 20; // r=20
+  const progress = (time / initialTime) * circumference;
+  
   return (
-    <div className="flex flex-col items-center">
-      {/* Circular Timer */}
-      <div className="relative w-14 h-14 mb-1">
-        <svg className="w-full h-full" viewBox="0 0 100 100">
-          {/* Background circle */}
-          <circle
-            className="text-gray-200"
-            strokeWidth="8"
-            stroke="currentColor"
-            fill="transparent"
-            r="42"
-            cx="50"
-            cy="50"
-          />
-          
-          {/* Progress circle */}
-          <circle
-            className={`${getTimerColor()} transition-all duration-1000 ease-linear`}
-            strokeWidth="8"
-            strokeLinecap="round"
-            stroke="currentColor"
-            fill="transparent"
-            r="42"
-            cx="50"
-            cy="50"
-            strokeDasharray={264}
-            strokeDashoffset={264 - (timeLeft / initialTime) * 264}
-            transform="rotate(-90 50 50)"
-          />
-        </svg>
-        
-        {/* Timer text */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xl font-bold">{timeLeft}</span>
-        </div>
+    <div className="relative flex items-center justify-center h-14 w-14">
+      {/* SVG Progress Circle */}
+      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 44 44">
+        {/* Background circle */}
+        <circle
+          cx="22"
+          cy="22"
+          r="20"
+          fill="none"
+          stroke="#e5e7eb"
+          strokeWidth="4"
+        />
+        {/* Progress circle */}
+        <circle
+          cx="22"
+          cy="22"
+          r="20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="4"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference - progress}
+          className={`transition-all duration-1000 ${getTimerColor()}`}
+        />
+      </svg>
+      
+      {/* Timer text and icon */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <Timer className={`h-4 w-4 ${getTimerColor()}`} />
+        <span className={`text-sm font-bold ${getTimerColor()}`}>{time}</span>
       </div>
     </div>
   );

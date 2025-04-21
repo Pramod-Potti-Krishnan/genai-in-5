@@ -3,6 +3,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -27,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PlusCircle, Pencil, Trash2, FileAudio, FileImage, Play } from "lucide-react";
+import { PlusCircle, Pencil, Trash2, FileImage, AudioWaveform } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -35,14 +43,23 @@ import { Audible, Topic, insertAudibleSchema } from "@shared/schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { z } from "zod";
 import { formatDuration } from "@/lib/utils";
+
+// Extend the insertAudibleSchema with additional fields for admin form
+const audibleFormSchema = insertAudibleSchema.extend({
+  title: z.string().min(2, "Title must be at least 2 characters"),
+  summary: z.string().min(10, "Summary must be at least 10 characters"),
+  lengthSec: z.coerce.number().min(1, "Length is required"),
+  topicId: z.coerce.number().min(1, "Topic is required")
+});
 
 export function AdminAudibles() {
   const { toast } = useToast();
   const [editingAudible, setEditingAudible] = useState<Audible | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
 
   const { data: audibles = [], isLoading: isLoadingAudibles } = useQuery<Audible[]>({
     queryKey: ['/api/audibles'],
@@ -52,8 +69,8 @@ export function AdminAudibles() {
     queryKey: ['/api/topics'],
   });
 
-  const form = useForm({
-    resolver: zodResolver(insertAudibleSchema),
+  const form = useForm<z.infer<typeof audibleFormSchema>>({
+    resolver: zodResolver(audibleFormSchema),
     defaultValues: {
       title: '',
       summary: '',
@@ -70,8 +87,8 @@ export function AdminAudibles() {
       topicId: 0
     });
     setEditingAudible(null);
+    setImageFile(null);
     setAudioFile(null);
-    setCoverImageFile(null);
   };
 
   const createAudibleMutation = useMutation({
@@ -93,7 +110,7 @@ export function AdminAudibles() {
       queryClient.invalidateQueries({ queryKey: ['/api/audibles'] });
       toast({
         title: "Audible created",
-        description: "The audible has been added successfully"
+        description: "The audio content has been added successfully"
       });
       resetForm();
       setIsOpen(false);
@@ -126,7 +143,7 @@ export function AdminAudibles() {
       queryClient.invalidateQueries({ queryKey: ['/api/audibles'] });
       toast({
         title: "Audible updated",
-        description: "The audible has been updated successfully"
+        description: "The audio content has been updated successfully"
       });
       resetForm();
       setIsOpen(false);
@@ -149,7 +166,7 @@ export function AdminAudibles() {
       queryClient.invalidateQueries({ queryKey: ['/api/audibles'] });
       toast({
         title: "Audible deleted",
-        description: "The audible has been deleted successfully"
+        description: "The audio content has been deleted successfully"
       });
     },
     onError: (error) => {
@@ -161,33 +178,24 @@ export function AdminAudibles() {
     }
   });
 
-  const onSubmit = (values: any) => {
+  const onSubmit = (values: z.infer<typeof audibleFormSchema>) => {
     const formData = new FormData();
     formData.append('title', values.title);
-    formData.append('summary', values.summary || '');
-    formData.append('lengthSec', values.lengthSec?.toString() || '0');
-    formData.append('topicId', values.topicId?.toString() || '0');
+    formData.append('summary', values.summary);
+    formData.append('lengthSec', values.lengthSec.toString());
+    formData.append('topicId', values.topicId.toString());
+    
+    if (imageFile) {
+      formData.append('coverImage', imageFile);
+    }
     
     if (audioFile) {
       formData.append('audio', audioFile);
-    }
-    
-    if (coverImageFile) {
-      formData.append('image', coverImageFile);
     }
 
     if (editingAudible) {
       updateAudibleMutation.mutate({ id: editingAudible.id, data: formData });
     } else {
-      // Require audio file for new audibles
-      if (!audioFile) {
-        toast({
-          title: "Error",
-          description: "Please upload an audio file",
-          variant: "destructive"
-        });
-        return;
-      }
       createAudibleMutation.mutate(formData);
     }
   };
@@ -195,8 +203,8 @@ export function AdminAudibles() {
   const handleEdit = (audible: Audible) => {
     form.reset({
       title: audible.title,
-      summary: audible.summary || '',
-      lengthSec: audible.lengthSec || 0,
+      summary: audible.summary,
+      lengthSec: audible.lengthSec,
       topicId: audible.topicId
     });
     setEditingAudible(audible);
@@ -204,108 +212,143 @@ export function AdminAudibles() {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this audible?')) {
+    if (window.confirm('Are you sure you want to delete this audio content?')) {
       deleteAudibleMutation.mutate(id);
-    }
-  };
-
-  const handleAudioFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setAudioFile(file);
-    
-    // Auto-fill length from audio file metadata if possible
-    if (file) {
-      const audio = new Audio();
-      audio.onloadedmetadata = () => {
-        form.setValue('lengthSec', Math.round(audio.duration));
-      };
-      audio.src = URL.createObjectURL(file);
     }
   };
 
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    setCoverImageFile(file);
+    setImageFile(file);
+  };
+
+  const handleAudioFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setAudioFile(file);
   };
 
   const isLoading = isLoadingAudibles || isLoadingTopics;
 
+  // Extract time in seconds from an audio file
+  const extractAudioDuration = (file: File): Promise<number> => {
+    return new Promise((resolve) => {
+      const audio = new Audio();
+      audio.preload = 'metadata';
+      audio.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(audio.src);
+        resolve(audio.duration);
+      };
+      audio.src = URL.createObjectURL(file);
+    });
+  };
+
+  // Update length when audio file changes
+  const updateAudioLength = async (file: File) => {
+    try {
+      const duration = await extractAudioDuration(file);
+      form.setValue('lengthSec', Math.round(duration));
+    } catch (error) {
+      console.error('Failed to extract audio duration:', error);
+    }
+  };
+
+  // Listen for audio file changes to update duration
+  const handleAudioFileWithDuration = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setAudioFile(file);
+    if (file) {
+      await updateAudioLength(file);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Manage Audibles</h2>
+        <h2 className="text-xl font-semibold">Manage Audio Content</h2>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button onClick={resetForm}>
               <PlusCircle className="h-4 w-4 mr-2" />
-              Add Audible
+              Add Audio
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>{editingAudible ? 'Edit Audible' : 'Add New Audible'}</DialogTitle>
+              <DialogTitle>{editingAudible ? 'Edit Audio Content' : 'Add New Audio Content'}</DialogTitle>
               <DialogDescription>
                 {editingAudible 
-                  ? 'Update the audible information below.' 
-                  : 'Enter the details for the new audible.'}
+                  ? 'Update the audio content information below.' 
+                  : 'Enter the details for the new audio content.'}
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="title">Title</Label>
-                  <Input
-                    id="title"
-                    {...form.register('title')}
-                    error={form.formState.errors.title?.message}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="topicId">Topic</Label>
-                  <Select 
-                    onValueChange={(value) => form.setValue('topicId', parseInt(value))}
-                    defaultValue={editingAudible ? editingAudible.topicId.toString() : undefined}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a topic" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {topics.map(topic => (
-                        <SelectItem key={topic.id} value={topic.id.toString()}>
-                          {topic.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="summary">Summary</Label>
-                <Textarea
-                  id="summary"
-                  {...form.register('summary')}
-                  error={form.formState.errors.summary?.message}
-                  rows={4}
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter audio title" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <FormField
+                  control={form.control}
+                  name="topicId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Topic</FormLabel>
+                      <Select 
+                        onValueChange={(value) => field.onChange(parseInt(value))}
+                        defaultValue={field.value ? field.value.toString() : undefined}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a topic" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {topics.map(topic => (
+                            <SelectItem key={topic.id} value={topic.id.toString()}>
+                              {topic.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="summary"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Summary</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Enter a summary of the audio content" 
+                          rows={3}
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
                 <div>
-                  <Label htmlFor="lengthSec">Length (seconds)</Label>
-                  <Input
-                    id="lengthSec"
-                    type="number"
-                    {...form.register('lengthSec', { valueAsNumber: true })}
-                    error={form.formState.errors.lengthSec?.message}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="audioFile">Audio File</Label>
+                  <Label htmlFor="audio">Audio File {editingAudible ? '(Leave empty to keep current)' : ''}</Label>
                   <div className="flex items-center gap-2 mt-1">
-                    <Button type="button" variant="outline" onClick={() => document.getElementById('audioFile')?.click()}>
-                      <FileAudio className="h-4 w-4 mr-2" />
-                      {audioFile ? 'Change Audio' : 'Select Audio'}
+                    <Button type="button" variant="outline" onClick={() => document.getElementById('audio')?.click()}>
+                      <AudioWaveform className="h-4 w-4 mr-2" />
+                      {audioFile ? 'Change Audio' : 'Select Audio File'}
                     </Button>
                     {audioFile && <span className="text-sm truncate max-w-[200px]">{audioFile.name}</span>}
                     {!audioFile && editingAudible?.audioUrl && (
@@ -313,26 +356,43 @@ export function AdminAudibles() {
                     )}
                   </div>
                   <Input
-                    id="audioFile"
+                    id="audio"
                     type="file"
                     accept="audio/*"
                     className="hidden"
-                    onChange={handleAudioFileChange}
+                    onChange={handleAudioFileWithDuration}
                   />
-                  {!editingAudible && !audioFile && (
-                    <p className="text-sm text-destructive mt-1">Audio file is required for new audibles</p>
-                  )}
                 </div>
+                
+                <FormField
+                  control={form.control}
+                  name="lengthSec"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Duration (seconds)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          {...field}
+                          min={1}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
                 <div>
-                  <Label htmlFor="coverImage">Cover Image</Label>
+                  <Label htmlFor="coverImage">Cover Image {editingAudible ? '(Leave empty to keep current)' : ''}</Label>
                   <div className="flex items-center gap-2 mt-1">
                     <Button type="button" variant="outline" onClick={() => document.getElementById('coverImage')?.click()}>
                       <FileImage className="h-4 w-4 mr-2" />
-                      {coverImageFile ? 'Change Image' : 'Select Image'}
+                      {imageFile ? 'Change Image' : 'Select Image'}
                     </Button>
-                    {coverImageFile && <span className="text-sm truncate max-w-[200px]">{coverImageFile.name}</span>}
-                    {!coverImageFile && editingAudible?.coverImage && (
-                      <span className="text-sm truncate max-w-[200px]">Current: {editingAudible.coverImage.split('/').pop()}</span>
+                    {imageFile && <span className="text-sm truncate max-w-[200px]">{imageFile.name}</span>}
+                    {!imageFile && editingAudible?.coverImage && (
+                      <span className="text-sm truncate max-w-[200px]">Current: {editingAudible.coverImage}</span>
                     )}
                   </div>
                   <Input
@@ -343,37 +403,41 @@ export function AdminAudibles() {
                     onChange={handleImageFileChange}
                   />
                 </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button 
-                  type="submit" 
-                  disabled={createAudibleMutation.isPending || updateAudibleMutation.isPending}
-                >
-                  {(createAudibleMutation.isPending || updateAudibleMutation.isPending) ? 'Saving...' : 'Save Audible'}
-                </Button>
-              </DialogFooter>
-            </form>
+                
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button type="button" variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button 
+                    type="submit" 
+                    disabled={createAudibleMutation.isPending || updateAudibleMutation.isPending}
+                  >
+                    {(createAudibleMutation.isPending || updateAudibleMutation.isPending) 
+                      ? 'Saving...' 
+                      : 'Save Audio'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>
 
       {isLoading ? (
-        <div className="text-center p-6">Loading audibles...</div>
+        <div className="text-center p-6">Loading audio content...</div>
       ) : audibles.length === 0 ? (
         <div className="text-center p-6 border rounded-md bg-muted/20">
-          <p>No audibles found. Create your first audible to get started.</p>
+          <p>No audio content found. Create your first audio to get started.</p>
         </div>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[80px]"></TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Topic</TableHead>
-              <TableHead>Duration</TableHead>
-              <TableHead>Preview</TableHead>
+              <TableHead className="w-[100px]">Duration</TableHead>
+              <TableHead>Summary</TableHead>
               <TableHead className="w-[100px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -382,32 +446,23 @@ export function AdminAudibles() {
               const topic = topics.find(t => t.id === audible.topicId);
               return (
                 <TableRow key={audible.id}>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center space-x-2">
-                      {audible.coverImage && (
-                        <img 
-                          src={audible.coverImage} 
-                          alt={audible.title} 
-                          className="h-10 w-10 object-cover rounded"
-                        />
-                      )}
-                      <span>{audible.title}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{topic?.name || 'Unknown'}</TableCell>
-                  <TableCell>{formatDuration(audible.lengthSec)}</TableCell>
                   <TableCell>
-                    {audible.audioUrl && (
-                      <div className="flex items-center space-x-2">
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={audible.audioUrl} target="_blank" rel="noopener noreferrer">
-                            <Play className="h-4 w-4 mr-1" />
-                            Preview
-                          </a>
-                        </Button>
+                    {audible.coverImage ? (
+                      <img 
+                        src={audible.coverImage} 
+                        alt={audible.title} 
+                        className="h-12 w-12 object-cover rounded-md" 
+                      />
+                    ) : (
+                      <div className="h-12 w-12 bg-muted rounded-md flex items-center justify-center">
+                        <AudioWaveform className="h-6 w-6 text-muted-foreground" />
                       </div>
                     )}
                   </TableCell>
+                  <TableCell className="font-medium">{audible.title}</TableCell>
+                  <TableCell>{topic?.title || 'Unknown'}</TableCell>
+                  <TableCell>{formatDuration(audible.lengthSec)}</TableCell>
+                  <TableCell className="max-w-xs truncate">{audible.summary}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Button variant="ghost" size="icon" onClick={() => handleEdit(audible)}>

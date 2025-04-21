@@ -1,9 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AdminTopics } from "./AdminTopics";
-import { AdminAudibles } from "./AdminAudibles";
-import { AdminFlashcards } from "./AdminFlashcards";
-import { AdminQuizzes } from "./AdminQuizzes";
-import { AdminUsers } from "./AdminUsers";
+import { AdminTopics } from "@/pages/admin/AdminTopics";
+import { AdminAudibles } from "@/pages/admin/AdminAudibles";
+import { AdminFlashcards } from "@/pages/admin/AdminFlashcards";
+import { AdminQuizzes } from "@/pages/admin/AdminQuizzes";
+import { AdminUsers } from "@/pages/admin/AdminUsers";
 import { useAuth } from "@/components/AuthProvider";
 
 export default function AdminDashboard() {

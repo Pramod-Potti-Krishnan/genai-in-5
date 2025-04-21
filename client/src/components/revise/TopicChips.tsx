@@ -2,8 +2,8 @@ import React from 'react';
 import { sections } from '../../lib/mockData';
 
 interface TopicChipsProps {
-  activeTopicId: number | null;
-  onSelectTopic: (topicId: number) => void;
+  activeTopicId: string | null;
+  onSelectTopic: (topicId: string | null) => void;
 }
 
 export default function TopicChips({ activeTopicId, onSelectTopic }: TopicChipsProps) {
@@ -17,7 +17,7 @@ export default function TopicChips({ activeTopicId, onSelectTopic }: TopicChipsP
     <div className="topic-chips" role="tablist">
       <button
         className={`topic-chip ${activeTopicId === null ? 'active' : ''}`}
-        onClick={() => onSelectTopic(0)}
+        onClick={() => onSelectTopic(null)}
         role="tab"
         aria-selected={activeTopicId === null}
       >
@@ -27,10 +27,10 @@ export default function TopicChips({ activeTopicId, onSelectTopic }: TopicChipsP
       {topics.map((topic) => (
         <button
           key={topic.id}
-          className={`topic-chip ${activeTopicId === topic.id ? 'active' : ''}`}
-          onClick={() => onSelectTopic(topic.id)}
+          className={`topic-chip ${activeTopicId === topic.id.toString() ? 'active' : ''}`}
+          onClick={() => onSelectTopic(topic.id.toString())}
           role="tab"
-          aria-selected={activeTopicId === topic.id}
+          aria-selected={activeTopicId === topic.id.toString()}
         >
           {topic.title}
         </button>

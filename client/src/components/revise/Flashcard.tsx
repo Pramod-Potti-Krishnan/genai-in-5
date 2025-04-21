@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
-import { Flashcard as FlashcardType } from '../../types';
 import { Button } from '../ui/button';
 import { CheckCircle, XCircle, RotateCcw } from 'lucide-react';
 import { audibles } from '../../lib/mockData';
+import { flashcards } from '../../lib/mockData';
+import { ProgressRing } from '../ui/progress-ring';
+
+// Define a FlashcardType that matches our mockData structure
+interface FlashcardType {
+  id: number;
+  audibleId: number;
+  points: string[];
+  title?: string; // Optional fields for our UI
+  image?: string;
+  isReviewed?: boolean;
+}
 
 interface FlashcardProps {
   flashcard: FlashcardType;
@@ -16,8 +27,13 @@ export default function Flashcard({ flashcard, onCorrect, onIncorrect, onNext }:
   const [userAnswer, setUserAnswer] = useState<'correct' | 'incorrect' | null>(null);
   
   // Find the associated audible to get the cover image
-  const audible = audibles.find(a => a.id === parseInt(flashcard.audibleId));
+  const audible = audibles.find(a => a.id === flashcard.audibleId);
   const coverImage = audible?.coverImage || 'https://images.unsplash.com/photo-1655720035441-3e7af3144a55';
+  
+  // Use mock data for the demo
+  const sectionTitle = audible ? "AI & Machine Learning" : "Technology";
+  const audibleTitle = audible ? audible.title : "Understanding Neural Networks";
+  const difficulty = flashcard.points.length <= 2 ? 'Basic' : flashcard.points.length <= 4 ? 'Intermediate' : 'Advanced';
   
   const handleFlip = () => {
     if (!isFlipped) {

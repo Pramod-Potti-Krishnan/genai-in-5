@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useAppContext } from "@/app-context";
 import { 
   Accordion, 
   AccordionContent, 
@@ -10,8 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Section } from "@/types";
-import { Audible } from "@shared/schema";
+import { Section, Audible } from "@/types";
 import { 
   Search,
   Headphones,
@@ -26,6 +24,7 @@ import {
   Clock
 } from "lucide-react";
 import { useLocalStorage } from "@/lib/useLocalStorage";
+import { mockSections } from "@/lib/mock-data";
 
 // Icon mapping for sections
 const SectionIcon = ({ icon }: { icon: string }) => {
@@ -71,11 +70,12 @@ interface LearnPageProps {
 }
 
 export default function LearnPage({ playAudible }: LearnPageProps) {
-  const { sections, progress } = useAppContext();
   const [_, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [bookmarks, setBookmarks] = useLocalStorage<BookmarkState>("bookmarks", {});
+  const [sections] = useState<Section[]>(mockSections);
+  const [listenedAudibles] = useState<string[]>([]); // Mock listened audibles
   const [filteredSections, setFilteredSections] = useState<Section[]>(sections);
   
   // Handle search filter
@@ -133,7 +133,7 @@ export default function LearnPage({ playAudible }: LearnPageProps) {
   };
   
   const isAudibleCompleted = (audibleId: string) => {
-    return progress.listenedAudibles.includes(audibleId);
+    return listenedAudibles.includes(audibleId);
   };
   
   // Count completed audibles in a section

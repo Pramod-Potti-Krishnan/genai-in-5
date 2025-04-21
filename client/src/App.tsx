@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "./components/AuthProvider";
-import { AppProvider } from "./app-context";
+
 import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
@@ -20,7 +20,7 @@ import BottomNavigation from "./components/BottomNavigation";
 import MiniPlayer from "./components/MiniPlayer";
 import Header from "./components/layout/Header";
 import { useState } from "react";
-import { Audible } from "@shared/schema";
+import { Audible } from "./types";
 
 export interface AudioPlayerState {
   audible: Audible | null;
@@ -117,9 +117,7 @@ function App() {
       <TooltipProvider>
         <Toaster />
         <AuthProvider>
-          <AppProvider>
-            <Router />
-          </AppProvider>
+          <Router />
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>

@@ -5,13 +5,21 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+/**
+ * Format seconds into a human-readable duration (mm:ss or hh:mm:ss)
+ */
 export function formatDuration(seconds: number): string {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
+  if (!seconds || isNaN(seconds)) return '00:00';
   
-  if (minutes === 0) {
-    return `${remainingSeconds}s`;
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  
+  const pad = (num: number) => num.toString().padStart(2, '0');
+  
+  if (hours > 0) {
+    return `${pad(hours)}:${pad(minutes)}:${pad(remainingSeconds)}`;
   }
   
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  return `${pad(minutes)}:${pad(remainingSeconds)}`;
 }

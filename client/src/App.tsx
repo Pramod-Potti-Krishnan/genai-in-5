@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "./components/AuthProvider";
 import { AppProvider } from "./app-context";
+import { ProtectedRoute, AdminRoute } from "./components/ProtectedRoute";
 
 import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/LoginPage";
@@ -18,6 +19,7 @@ import TriviaPage from "@/pages/TriviaPage";
 import ProgressPage from "@/pages/ProgressPage";
 import Profile from "@/pages/profile";
 import Settings from "@/pages/settings";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import BottomNavigation from "./components/BottomNavigation";
 import MiniPlayer from "./components/MiniPlayer";
 import Header from "./components/layout/Header";
@@ -113,6 +115,11 @@ function Router() {
           <Route path="/settings" component={Settings} />
           <Route path="/auth" component={LoginPage} />
           <Route path="/register" component={RegisterPage} />
+          <Route path="/admin">
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          </Route>
           <Route component={NotFound} />
         </Switch>
       </main>

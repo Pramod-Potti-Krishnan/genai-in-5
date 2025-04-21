@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "../components/AuthProvider";
-import { BookOpen } from "lucide-react";
+// Use Font Awesome instead of Lucide for consistency
 import { Flashcard } from "@shared/schema";
 
 // Helper function to group flashcards by section
@@ -213,7 +213,7 @@ export default function RevisePage() {
         <main className="p-4 flex flex-col items-center justify-center h-[calc(100vh-8rem)]">
           <div className="text-center p-6">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
-              <BookOpen size={32} />
+              <i className="fas fa-book-open text-2xl"></i>
             </div>
             <h2 className="text-xl font-semibold text-gray-700 mb-2">No Cards to Revise</h2>
             <p className="text-gray-600 mb-4">Complete some audibles in the Learn section to unlock flashcards.</p>
@@ -328,7 +328,7 @@ export default function RevisePage() {
                           />
                         ) : (
                           <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center text-primary">
-                            <BookOpen size={48} />
+                            <i className="fas fa-book-open text-4xl"></i>
                           </div>
                         )}
                       </div>
@@ -344,7 +344,7 @@ export default function RevisePage() {
                           </Badge>
                         </div>
                         
-                        <ul className="space-y-2 flex-1 overflow-y-auto">
+                        <ul className="space-y-2 flex-1 overflow-y-auto scrollbar-hide">
                           {cardsInCurrentSection[currentCardIndex]?.points.map((point, idx) => (
                             <li key={idx} className="flex items-start">
                               <i className="fas fa-circle text-xs text-primary mt-1.5 mr-3"></i>

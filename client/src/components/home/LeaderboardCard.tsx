@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { LeaderboardMetric, userStats } from "@/lib/leaderboard-data";
 import { CountUp } from "@/components/ui/count-up";
 import { ProgressRing } from "@/components/ui/progress-ring";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface MetricCardProps {
   metric: LeaderboardMetric;
@@ -57,9 +57,91 @@ const MetricCard = ({ metric, className = "" }: MetricCardProps) => {
 
 export default function LeaderboardCard() {
   const [, setLocation] = useLocation();
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   const handleClick = () => {
-    setLocation("/progress");
+    // Only navigate if we didn't just finish dragging
+    if (!isDragging) {
+      setLocation("/progress");
+    }
+  };
+  
+  // Handle keyboard navigation
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!carousel.contains(document.activeElement)) return;
+      
+      const SCROLL_AMOUNT = 200; // Amount to scroll with arrow keys
+      
+      switch (e.key) {
+        case 'ArrowRight':
+          carousel.scrollBy({ left: SCROLL_AMOUNT, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+        case 'ArrowLeft':
+          carousel.scrollBy({ left: -SCROLL_AMOUNT, behavior: 'smooth' });
+          e.preventDefault();
+          break;
+      }
+    };
+    
+    carousel.setAttribute('tabindex', '0');
+    carousel.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      carousel.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+  
+  // Handle mouse events for desktop dragging
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!carouselRef.current) return;
+    
+    setIsDragging(true);
+    setStartX(e.pageX - carouselRef.current.offsetLeft);
+    setScrollLeft(carouselRef.current.scrollLeft);
+    
+    // Prevent text selection during drag
+    document.body.style.userSelect = 'none';
+    e.stopPropagation(); // Prevent clicking the parent to navigate
+  };
+  
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || !carouselRef.current) return;
+    
+    const x = e.pageX - carouselRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // Scroll speed multiplier
+    carouselRef.current.scrollLeft = scrollLeft - walk;
+    
+    e.stopPropagation(); // Prevent clicking the parent to navigate
+  };
+  
+  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsDragging(false);
+    document.body.style.userSelect = '';
+    
+    // If we just dragged, don't treat this as a click
+    if (Math.abs(scrollLeft - carouselRef.current?.scrollLeft!) > 5) {
+      e.stopPropagation();
+    }
+    
+    // Reset drag state after a short delay
+    setTimeout(() => {
+      setIsDragging(false);
+    }, 100);
+  };
+  
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      setIsDragging(false);
+      document.body.style.userSelect = '';
+    }
   };
 
   return (
@@ -71,7 +153,21 @@ export default function LeaderboardCard() {
             Global Leaderboard
           </span>
         </h2>
-        <div className="flex overflow-x-auto scrollbar-hide space-x-3 pb-2 carousel touch-action-pan-x snap-x snap-mandatory">
+        <div 
+          ref={carouselRef}
+          className="flex overflow-x-auto scrollbar-hide space-x-3 pb-2 snap-x snap-mandatory touch-pan-x"
+          style={{ 
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            cursor: isDragging ? 'grabbing' : 'grab',
+          }}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          role="region"
+          aria-label="Global Leaderboard metrics"
+        >
           <MetricCard metric={userStats.progressRank} className="snap-start" />
           <MetricCard metric={userStats.weeklyScore} className="snap-start" />
           <MetricCard metric={userStats.monthlyRank} className="snap-start" />

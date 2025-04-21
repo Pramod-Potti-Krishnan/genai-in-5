@@ -9,6 +9,8 @@ import { useAuth } from "../components/AuthProvider";
 import LeaderboardCard from "@/components/home/LeaderboardCard";
 import WeeklyPulseCarousel from "@/components/home/WeeklyPulseCarousel";
 import DailyFlashCarousel from "@/components/home/DailyFlashCarousel";
+import MonthlyRoundupCarousel from "@/components/home/MonthlyRoundupCarousel";
+import RecentUpdatesCarousel from "@/components/home/RecentUpdatesCarousel";
 import { HomeAudible } from "@/components/home/types";
 
 interface HomePageProps {
@@ -73,16 +75,7 @@ export default function HomePage({ playAudible }: HomePageProps) {
       </header>
       
       <main className="p-4 space-y-6">
-        {/* Leaderboard Card */}
-        <LeaderboardCard />
-        
-        {/* Weekly Pulse */}
-        <WeeklyPulseCarousel playAudible={handlePlayHomeAudible} />
-        
-        {/* Daily Flash */}
-        <DailyFlashCarousel playAudible={handlePlayHomeAudible} />
-        
-        {/* Next Up Card */}
+        {/* Next Up Card - First in the order */}
         <section className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-800">Next Up</h2>
           {nextAudible && (
@@ -115,7 +108,19 @@ export default function HomePage({ playAudible }: HomePageProps) {
           )}
         </section>
         
-        {/* Progress Summary */}
+        {/* Global Leaderboard - Second in the order */}
+        <LeaderboardCard />
+        
+        {/* Weekly Pulse - Third in the order */}
+        <WeeklyPulseCarousel playAudible={handlePlayHomeAudible} />
+        
+        {/* Monthly Round-Up - Fourth in the order (New) */}
+        <MonthlyRoundupCarousel playAudible={handlePlayHomeAudible} />
+        
+        {/* Recent Updates - Fifth in the order (New) */}
+        <RecentUpdatesCarousel playAudible={handlePlayHomeAudible} />
+        
+        {/* Progress Summary - Optional */}
         <section className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-800">Progress Summary</h2>
           <Card>
@@ -130,32 +135,6 @@ export default function HomePage({ playAudible }: HomePageProps) {
               </div>
             </CardContent>
           </Card>
-        </section>
-        
-        {/* Recent Audibles */}
-        <section className="space-y-2">
-          <h2 className="text-lg font-semibold text-gray-800">Recent Audibles</h2>
-          <div className="overflow-x-auto -mx-4 px-4">
-            <div className="flex space-x-3 pb-2">
-              {recentAudibles.map(audible => (
-                <div 
-                  key={audible.id}
-                  className="flex-shrink-0 w-36 bg-white rounded-lg border shadow-sm overflow-hidden cursor-pointer"
-                  onClick={() => playAudible(audible)}
-                >
-                  <img 
-                    src={audible.coverImage || "https://via.placeholder.com/150x100"}
-                    alt={audible.title}
-                    className="w-full h-20 object-cover"
-                  />
-                  <div className="p-2">
-                    <h3 className="font-medium text-sm truncate">{audible.title}</h3>
-                    <p className="text-xs text-gray-600 mt-1">{formatDuration(audible.durationInSeconds)}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </section>
       </main>
     </div>

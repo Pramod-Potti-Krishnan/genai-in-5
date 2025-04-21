@@ -43,7 +43,7 @@ function Router() {
       audible,
       isPlaying: true,
       currentTime: 0,
-      duration: audible.durationInSeconds || 0
+      duration: audible.duration || 0
     });
   };
 

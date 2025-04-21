@@ -1,0 +1,91 @@
+## 🌟 Home Page polish & carousel swipe fix
+
+### 1. Personal greeting
+- Place `<GreetingBanner>` component at top:
+  *Text:* “Good {{timeOfDay}}, {{userName}} 👋”
+  *Mock `timeOfDay` with real Date, `userName = "Pramod"`.*
+
+### 2. Global Leaderboard animation
+- Wrap KPI numbers in `<CountUp>` component (0 → value over 1 s).
+- Add small radial progress ring SVG behind each icon (stroke-dasharray).
+
+### 3. Next‑Up card motion
+- Cover image: class `.rotating-img` → `animation: spin 15s linear infinite;`
+- Overlay circular progress = `% listened` (fake 40 % for now).
+
+### 4. Iconised section headers
+```html
+<h3><span class="icon">🎧</span>Weekly Pulse</h3>
+(Same for Monthly Round‑Up 📅, Trending Topics 🔥)
+
+5. Carousel visual tweaks
+Card CSS:
+
+css
+Copy
+Edit
+.carousel-card {
+  background: linear-gradient(135deg,var(--cardColor),#fff);
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  scroll-snap-align: start;
+}
+.badge-new { position:absolute; top:8px; right:8px; }
+Add NEW badge if Date.now()-item.date < 3*24h.
+
+6. 🔄 Swipe not working? Enable horizontal pan
+For each horizontal container:
+
+html
+Copy
+Edit
+<div class="carousel"
+     tabindex="0">
+  …
+</div>
+CSS:
+
+css
+Copy
+Edit
+.carousel{
+  display:flex; gap:12px;
+  overflow-x:auto; overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory;
+  scrollbar-width:none;  /* hide FF */
+  touch-action: pan-x;    /* allow horizontal swipe */
+}
+.carousel::-webkit-scrollbar{display:none;}
+JS fallback (optional):
+
+js
+Copy
+Edit
+// drag-to-scroll for desktop
+carousel.addEventListener('wheel', e=>{
+  if(Math.abs(e.deltaX)<Math.abs(e.deltaY)) return;
+  carousel.scrollLeft += e.deltaX;
+});
+7. Trending chips row
+Convert current large cards to chips:
+
+html
+Copy
+Edit
+<div class="chip" v-for="tag in hotTags">{{tag}}</div>
+Horizontal scroll style same as carousel.
+
+8. Progress Summary ring
+Replace bar with <ProgressRing percent="20" label="2/10"> (simple SVG circle).
+
+9. Mini‑player equalizer
+Add three bars animated with @keyframes jump 0.6s ease infinite alternate.
+
+10. Keep all data mocked; no backend work.
+Deliverable: Home page with new animations, icons, functional horizontal swipe, and updated layouts. Push to Replit and ping for re‑review.
+
+css
+Copy
+Edit
+
+This prompt tells Replit exactly **what** to change and **why**, adding visual flair and fixing the carousel swipe issue in a single, incremental task.

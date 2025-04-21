@@ -1,0 +1,116 @@
+/* Rotating image animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotating-img {
+  animation: spin 15s linear infinite;
+}
+
+/* Equalizer animation for mini-player */
+@keyframes jump {
+  0% {
+    height: 5px;
+  }
+  100% {
+    height: 12px;
+  }
+}
+
+.equalizer-bar {
+  width: 3px;
+  background-color: currentColor;
+  border-radius: 1px;
+}
+
+.equalizer-bar:nth-child(1) {
+  animation: jump 0.6s ease infinite alternate;
+}
+
+.equalizer-bar:nth-child(2) {
+  animation: jump 0.6s ease 0.15s infinite alternate;
+}
+
+.equalizer-bar:nth-child(3) {
+  animation: jump 0.6s ease 0.3s infinite alternate;
+}
+
+/* Carousel styles */
+.carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+  touch-action: pan-x; /* Allow horizontal swipe */
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-card {
+  background: linear-gradient(135deg, var(--cardColor, #f8f9fa), #fff);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  scroll-snap-align: start;
+}
+
+.badge-new {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #ff3b3b;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  z-index: 10;
+}
+
+/* Chip styles for trending topics */
+.chips-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  touch-action: pan-x;
+  padding: 4px 0;
+}
+
+.chips-row::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  scroll-snap-align: start;
+  background-color: #f1f5f9;
+  border-radius: 100px;
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chip:hover {
+  background-color: #e2e8f0;
+}
+
+/* Touch action utility class */
+.touch-action-pan-x {
+  touch-action: pan-x;
+}

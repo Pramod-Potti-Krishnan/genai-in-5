@@ -68,7 +68,7 @@ interface RecentUpdatesCarouselProps {
 export default function RecentUpdatesCarousel({ playAudible }: RecentUpdatesCarouselProps) {
   return (
     <div className="mb-6">
-      <h2 className="text-xl font-bold mb-3">Recent Updates</h2>
+      <h2 className="text-xl font-bold mb-3">Trending Topics</h2>
       <div className="flex overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
         {recentUpdatesData.map((update) => (
           <RecentUpdateCard key={update.id} update={update} onClick={playAudible} />

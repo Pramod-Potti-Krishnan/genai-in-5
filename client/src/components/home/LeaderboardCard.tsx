@@ -63,20 +63,20 @@ export default function LeaderboardCard() {
   };
 
   return (
-    <Card className="mb-4 overflow-hidden" onClick={handleClick}>
-      <CardContent className="p-4">
-        <CardTitle className="text-base font-medium mb-3">
+    <div className="mb-4" onClick={handleClick}>
+      <div className="px-1">
+        <h3 className="text-base font-medium mb-3">
           <span className="inline-flex items-center">
             <span className="icon mr-2">🏆</span>
             Global Leaderboard
           </span>
-        </CardTitle>
-        <div className="flex overflow-x-auto space-x-3 pb-2 carousel touch-action-pan-x">
-          <MetricCard metric={userStats.progressRank} />
-          <MetricCard metric={userStats.weeklyScore} />
-          <MetricCard metric={userStats.monthlyRank} />
+        </h3>
+        <div className="flex overflow-x-auto scrollbar-hide space-x-3 pb-2 carousel touch-action-pan-x snap-x snap-mandatory">
+          <MetricCard metric={userStats.progressRank} className="snap-start" />
+          <MetricCard metric={userStats.weeklyScore} className="snap-start" />
+          <MetricCard metric={userStats.monthlyRank} className="snap-start" />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

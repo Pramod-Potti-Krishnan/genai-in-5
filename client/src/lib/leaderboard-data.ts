@@ -1,7 +1,7 @@
 export interface LeaderboardMetric {
   title: string;
   value: string | number;
-  rank: number; // as percentage, e.g. top 12%
+  rank?: number; // as percentage, e.g. top 12%
   icon: string;
   total?: number;
   current?: number;
@@ -9,8 +9,8 @@ export interface LeaderboardMetric {
 
 export interface UserStats {
   progressRank: LeaderboardMetric;
-  masteryScore: LeaderboardMetric;
-  breadthIndex: LeaderboardMetric;
+  weeklyScore: LeaderboardMetric;
+  monthlyRank: LeaderboardMetric;
 }
 
 export const userStats: UserStats = {
@@ -18,25 +18,45 @@ export const userStats: UserStats = {
     title: "Progress Rank",
     value: "Top 12%",
     rank: 12,
-    icon: "🏅",
-    current: 18,
-    total: 50
+    icon: "📈"
   },
-  masteryScore: {
-    title: "Mastery Score",
-    value: 4.2,
-    rank: 20,
-    icon: "⭐"
+  weeklyScore: {
+    title: "Weekly Score",
+    value: "86 / 100",
+    icon: "⭐",
+    current: 86,
+    total: 100
   },
-  breadthIndex: {
-    title: "Breadth Index",
-    value: 7,
-    rank: 15,
-    icon: "📚"
+  monthlyRank: {
+    title: "Monthly Rank",
+    value: "274 / 300",
+    icon: "🏆",
+    current: 274,
+    total: 300
   }
 };
 
 export interface WeeklyPulse {
+  id: string;
+  title: string;
+  date: string;
+  summary: string;
+  audioUrl: string;
+  duration: number; // in seconds
+  coverImage?: string;
+}
+
+export interface MonthlyRoundup {
+  id: string;
+  title: string;
+  date: string;
+  summary: string;
+  audioUrl: string;
+  duration: number; // in seconds
+  coverImage?: string;
+}
+
+export interface RecentUpdate {
   id: string;
   title: string;
   date: string;
@@ -93,6 +113,131 @@ export const weeklyPulseData: WeeklyPulse[] = [
     audioUrl: "/audio/weekly-pulse-4.mp3",
     duration: 300,
     coverImage: "https://ui-avatars.com/api/?name=LLM+Reason&background=C4B5FD&color=fff&format=svg"
+  }
+];
+
+// Monthly Round-Up - last 3 months
+export const monthlyRoundupData: MonthlyRoundup[] = [
+  {
+    id: "mr1",
+    title: "April 2025 Highlights",
+    date: "Apr 2025",
+    summary: "Major breakthroughs in AI agent development and regulatory responses",
+    audioUrl: "/audio/monthly-roundup-1.mp3",
+    duration: 600, // 10 minutes
+    coverImage: "https://ui-avatars.com/api/?name=Apr+2025&background=0EA5E9&color=fff&format=svg"
+  },
+  {
+    id: "mr2",
+    title: "March 2025 Highlights",
+    date: "Mar 2025",
+    summary: "Advancements in multimodal LLMs and emergent capabilities",
+    audioUrl: "/audio/monthly-roundup-2.mp3",
+    duration: 600,
+    coverImage: "https://ui-avatars.com/api/?name=Mar+2025&background=38BDF8&color=fff&format=svg"
+  },
+  {
+    id: "mr3",
+    title: "February 2025 Highlights",
+    date: "Feb 2025",
+    summary: "New paradigms in human-AI collaboration and coding assistants",
+    audioUrl: "/audio/monthly-roundup-3.mp3",
+    duration: 600,
+    coverImage: "https://ui-avatars.com/api/?name=Feb+2025&background=7DD3FC&color=fff&format=svg"
+  }
+];
+
+// Recent Updates - last 10 audibles added
+export const recentUpdatesData: RecentUpdate[] = [
+  {
+    id: "ru1",
+    title: "Transformer Architecture Deep Dive",
+    date: "Apr 21, 2025",
+    summary: "Comprehensive exploration of modern transformer architectures",
+    audioUrl: "/audio/recent-update-1.mp3",
+    duration: 480, // 8 minutes
+    coverImage: "https://ui-avatars.com/api/?name=Transformers&background=4ADE80&color=fff&format=svg"
+  },
+  {
+    id: "ru2",
+    title: "AI Safety Practices",
+    date: "Apr 20, 2025",
+    summary: "Current best practices for AI system alignment and safety",
+    audioUrl: "/audio/recent-update-2.mp3",
+    duration: 420, // 7 minutes
+    coverImage: "https://ui-avatars.com/api/?name=AI+Safety&background=86EFAC&color=fff&format=svg"
+  },
+  {
+    id: "ru3",
+    title: "Zero-shot & Few-shot Learning",
+    date: "Apr 18, 2025",
+    summary: "Techniques for training models that can learn with minimal examples",
+    audioUrl: "/audio/recent-update-3.mp3",
+    duration: 450, // 7.5 minutes
+    coverImage: "https://ui-avatars.com/api/?name=Few+shot&background=A7F3D0&color=fff&format=svg"
+  },
+  {
+    id: "ru4",
+    title: "RLHF Explained",
+    date: "Apr 17, 2025",
+    summary: "The mechanics of Reinforcement Learning from Human Feedback",
+    audioUrl: "/audio/recent-update-4.mp3",
+    duration: 390, // 6.5 minutes
+    coverImage: "https://ui-avatars.com/api/?name=RLHF&background=BEF264&color=fff&format=svg"
+  },
+  {
+    id: "ru5",
+    title: "LLM Inference Optimization",
+    date: "Apr 15, 2025",
+    summary: "Techniques to speed up inference and reduce cost of LLM deployments",
+    audioUrl: "/audio/recent-update-5.mp3",
+    duration: 360, // 6 minutes
+    coverImage: "https://ui-avatars.com/api/?name=Inference&background=D9F99D&color=fff&format=svg"
+  },
+  {
+    id: "ru6",
+    title: "Multi-agent AI Systems",
+    date: "Apr 14, 2025",
+    summary: "Architectures for coordinating multiple specialized AI agents",
+    audioUrl: "/audio/recent-update-6.mp3",
+    duration: 420,
+    coverImage: "https://ui-avatars.com/api/?name=Multi+Agent&background=F9A8D4&color=fff&format=svg"
+  },
+  {
+    id: "ru7",
+    title: "AI Governance Frameworks",
+    date: "Apr 12, 2025",
+    summary: "Emerging standards for AI system governance and oversight",
+    audioUrl: "/audio/recent-update-7.mp3",
+    duration: 480,
+    coverImage: "https://ui-avatars.com/api/?name=Governance&background=FDA4AF&color=fff&format=svg"
+  },
+  {
+    id: "ru8",
+    title: "Vector Databases for AI",
+    date: "Apr 10, 2025",
+    summary: "How vector databases enable efficient semantic search and retrieval",
+    audioUrl: "/audio/recent-update-8.mp3",
+    duration: 330, // 5.5 minutes
+    coverImage: "https://ui-avatars.com/api/?name=Vector+DB&background=FECDD3&color=fff&format=svg"
+  },
+  {
+    id: "ru9",
+    title: "Adversarial Attacks on LLMs",
+    date: "Apr 8, 2025",
+    summary: "Understanding and preventing prompt injection and jailbreaking",
+    audioUrl: "/audio/recent-update-9.mp3",
+    duration: 390,
+    coverImage: "https://ui-avatars.com/api/?name=Adversarial&background=FED7AA&color=fff&format=svg"
+  },
+  {
+    id: "ru10",
+    title: "Frontier Model Capabilities",
+    date: "Apr 6, 2025",
+    summary: "Analysis of capabilities at the frontier of AI research",
+    audioUrl: "/audio/recent-update-10.mp3",
+    duration: 450,
+    coverImage: "https://ui-avatars.com/api/?name=Frontier&background=FFEDD5&color=fff&format=svg"
   }
 ];
 

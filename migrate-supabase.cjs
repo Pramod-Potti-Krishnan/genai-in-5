@@ -1,28 +1,28 @@
-// This script migrates data from Neon to Supabase after tables are created
-import { createClient } from '@supabase/supabase-js';
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from 'ws';
+// CommonJS version of migration script
+const { createClient } = require('@supabase/supabase-js');
+const { Pool } = require('pg');
+const { drizzle } = require('drizzle-orm/node-postgres');
+require('dotenv').config();
 
-// Direct import of schema from source file
-import * as schema from './shared/schema.ts';
-
-// Set up WebSocket for Neon
-neonConfig.webSocketConstructor = ws;
+// Get database credentials from environment
+const sourceDbUrl = process.env.DATABASE_URL;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabaseDbUrl = process.env.SUPABASE_DATABASE_URL;
 
 // Define table names in the order they should be migrated (respecting foreign keys)
 const TABLES = [
-  { schemaName: 'users', tableName: 'users' },
-  { schemaName: 'topics', tableName: 'topics' },
-  { schemaName: 'audibles', tableName: 'audibles' },
-  { schemaName: 'flashcards', tableName: 'flashcards' },
-  { schemaName: 'quizQuestions', tableName: 'quiz_questions' },
-  { schemaName: 'userProgress', tableName: 'user_progress' },
-  { schemaName: 'userFlashcards', tableName: 'user_flashcards' },
-  { schemaName: 'userQuizScores', tableName: 'user_quiz_scores' },
-  { schemaName: 'userStreaks', tableName: 'user_streaks' },
-  { schemaName: 'userAchievements', tableName: 'user_achievements' },
-  { schemaName: 'storageObjects', tableName: 'storage_objects' }
+  'users',
+  'topics',
+  'audibles',
+  'flashcards',
+  'quiz_questions',
+  'user_progress',
+  'user_flashcards',
+  'user_quiz_scores',
+  'user_streaks',
+  'user_achievements',
+  'storage_objects'
 ];
 
 async function migrateData() {
@@ -30,53 +30,45 @@ async function migrateData() {
   
   try {
     // Connect to source database (Neon)
-    if (!process.env.DATABASE_URL) {
+    if (!sourceDbUrl) {
       throw new Error("DATABASE_URL is not set");
     }
     
-    const sourcePool = new Pool({ connectionString: process.env.DATABASE_URL });
-    const sourceDb = drizzle(sourcePool, { schema });
-    
+    const sourcePool = new Pool({ connectionString: sourceDbUrl });
     console.log("✅ Connected to source database (Neon)");
     
     // Connect to destination (Supabase)
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+    if (!supabaseUrl || !supabaseKey) {
       throw new Error("SUPABASE_URL or SUPABASE_ANON_KEY is not set");
     }
     
     // Create Supabase client
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_ANON_KEY
-    );
-    
+    const supabase = createClient(supabaseUrl, supabaseKey);
     console.log("✅ Connected to Supabase");
     
     // Migrate each table
-    for (const table of TABLES) {
-      await migrateTable(sourceDb, supabase, table.schemaName, table.tableName);
+    for (const tableName of TABLES) {
+      await migrateTable(sourcePool, supabase, tableName);
     }
     
     console.log("✅ Data migration completed!");
     
+    // Close source pool
+    await sourcePool.end();
+    
   } catch (error) {
     console.error("❌ Migration failed:", error.message);
     console.error("Error details:", error);
+    process.exit(1);
   }
 }
 
-async function migrateTable(sourceDb, supabase, schemaName, tableName) {
+async function migrateTable(sourcePool, supabase, tableName) {
   console.log(`Migrating ${tableName}...`);
   
   try {
-    // Fetch data from source
-    const schemaTable = schema[schemaName];
-    if (!schemaTable) {
-      console.error(`Schema table ${schemaName} not found!`);
-      return;
-    }
-    
-    const sourceData = await sourceDb.select().from(schemaTable);
+    // Get data from source
+    const { rows: sourceData } = await sourcePool.query(`SELECT * FROM ${tableName}`);
     
     if (!sourceData || sourceData.length === 0) {
       console.log(`No data to migrate for ${tableName}`);
@@ -86,7 +78,7 @@ async function migrateTable(sourceDb, supabase, schemaName, tableName) {
     console.log(`Found ${sourceData.length} records in ${tableName}`);
     
     // Migrate in batches to avoid request size limits
-    const batchSize = 100;
+    const batchSize = 50;
     let successCount = 0;
     
     for (let i = 0; i < sourceData.length; i += batchSize) {

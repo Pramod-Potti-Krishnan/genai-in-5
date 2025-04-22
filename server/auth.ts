@@ -115,8 +115,21 @@ export function setupAuth(app: Express) {
   passport.deserializeUser(async (id: number, done) => {
     try {
       const user = await storage.getUser(id);
+      
+      if (!user) {
+        return done(null, false);
+      }
+      
+      // Ensure firstName exists (backward compatibility)
+      if (!user.firstName && user.name) {
+        const nameParts = user.name.split(' ');
+        user.firstName = nameParts[0] || user.name;
+        user.lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : null;
+      }
+      
       done(null, user as Express.User);
     } catch (error) {
+      console.error("Deserialize error:", error);
       done(error);
     }
   });

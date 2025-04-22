@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocalStorage } from "../lib/useLocalStorage";
-import { audibles } from "../lib/mockData";
-import { defaultUserProgress, UserProgressData } from "../lib/mockData";
-import { Audible } from "@shared/schema";
+import { Audible, Topic, UserProgress } from "@shared/schema";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -16,57 +14,98 @@ import TrendingTopicsCarousel from "@/components/home/TrendingTopicsCarousel";
 import GreetingBanner from "@/components/home/GreetingBanner";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { HomeAudible } from "@/components/home/types";
+import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 
 interface HomePageProps {
   playAudible: (audible: Audible) => void;
 }
 
+// Type for keeping track of completed audibles locally
+interface LocalProgress {
+  completedAudibleIds: number[];
+}
+
 export default function HomePage({ playAudible }: HomePageProps) {
   const { user } = useAuth();
-  const [userProgress, setUserProgress] = useLocalStorage<UserProgressData>("userProgress", defaultUserProgress);
-  const [nextAudible, setNextAudible] = useState<Audible | null>(null);
-  const [recentAudibles, setRecentAudibles] = useState<Audible[]>([]);
+  const [localProgress, setLocalProgress] = useLocalStorage<LocalProgress>("userProgress", { completedAudibleIds: [] });
+
+  // Fetch topics from API
+  const { data: topics, isLoading: isLoadingTopics } = useQuery<Topic[]>({
+    queryKey: ['/api/topics'],
+    staleTime: 60 * 1000, // 1 minute
+  });
+
+  // Fetch audibles from API
+  const { data: audibles, isLoading: isLoadingAudibles } = useQuery<Audible[]>({
+    queryKey: ['/api/audibles'],
+    staleTime: 60 * 1000, // 1 minute
+  });
+
+  // Fetch user progress if authenticated
+  const { data: userProgress, isLoading: isLoadingProgress } = useQuery<UserProgress[]>({
+    queryKey: ['/api/me/progress'],
+    enabled: !!user,
+    staleTime: 60 * 1000, // 1 minute,
+    refetchOnWindowFocus: false,
+  });
   
-  useEffect(() => {
-    // Find next audible (first incomplete)
-    const nextUp = audibles.find(audible => 
-      !userProgress.completedAudibles.includes(audible.id)
-    ) || audibles[0];
-    
-    setNextAudible(nextUp);
-    
-    // Get recent audibles (just show the last 4 for now)
-    const recent = [...audibles]
-      .sort((a, b) => b.id - a.id) // Sort by newest first (using id as proxy)
-      .slice(0, 4);
-    
-    setRecentAudibles(recent);
-  }, [userProgress]);
+  // Find next audible (first incomplete)
+  const nextAudible = audibles ? 
+    audibles.find(audible => !localProgress.completedAudibleIds.includes(audible.id)) || 
+    (audibles.length > 0 ? audibles[0] : null) 
+    : null;
+  
+  // Get recent audibles (just show the last 4)
+  const recentAudibles = audibles ? 
+    [...audibles]
+      .sort((a, b) => b.id - a.id) // Sort by newest first
+      .slice(0, 4) 
+    : [];
   
   const getTotalProgress = () => {
+    if (!audibles) return 0;
     const totalAudibles = audibles.length;
-    const completedCount = userProgress.completedAudibles.length;
-    return Math.round((completedCount / totalAudibles) * 100);
+    const completedCount = localProgress.completedAudibleIds.length;
+    return totalAudibles > 0 ? Math.round((completedCount / totalAudibles) * 100) : 0;
   };
   
   const formatDuration = (seconds: number) => {
     return `${Math.floor(seconds / 60)} min`;
   };
   
+  // Loading state
+  const isLoading = isLoadingTopics || isLoadingAudibles;
+  if (isLoading) {
+    return (
+      <div className="flex-1 pb-16 flex items-center justify-center min-h-[50vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
   if (!user) return null;
   
   // Handler for playing home audibles
   const handlePlayHomeAudible = (homeAudible: HomeAudible) => {
-    // Convert HomeAudible to Audible for compatibility with existing player
-    const audibleToPlay: Audible = {
-      id: parseInt(homeAudible.id),
+    // Find the matching audible from our database records
+    if (audibles) {
+      const dbAudible = audibles.find(a => a.id === parseInt(homeAudible.id.toString()));
+      if (dbAudible) {
+        playAudible(dbAudible);
+        return;
+      }
+    }
+    
+    // Fallback if not found in database
+    const audibleToPlay: any = {
+      id: parseInt(homeAudible.id.toString()),
       title: homeAudible.title,
-      description: homeAudible.summary,
+      summary: homeAudible.summary,
       audioUrl: homeAudible.audioUrl,
       coverImage: homeAudible.coverImage || null,
-      durationInSeconds: homeAudible.duration,
-      sectionId: 1, // Default section
-      createdAt: new Date()
+      lengthSec: homeAudible.duration,
+      topicId: 1
     };
     
     playAudible(audibleToPlay);

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import IntroCarousel from './IntroCarousel';
 import FeatureTour from './FeatureTour';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useTour } from './TourContext';
 
 interface OnboardingExperienceProps {
   userId: number;
@@ -12,7 +13,7 @@ interface OnboardingExperienceProps {
 
 export default function OnboardingExperience({ userId, showOnboarding }: OnboardingExperienceProps) {
   const [showIntro, setShowIntro] = useState(showOnboarding);
-  const [showTour, setShowTour] = useState(false);
+  const { showTour, startTour, endTour } = useTour();
   const { toast } = useToast();
   
   const completeOnboardingMutation = useMutation({
@@ -38,7 +39,7 @@ export default function OnboardingExperience({ userId, showOnboarding }: Onboard
   
   const handleIntroComplete = () => {
     setShowIntro(false);
-    setShowTour(true);
+    startTour(); // Start the feature tour after intro
   };
   
   const handleIntroSkip = () => {
@@ -47,7 +48,7 @@ export default function OnboardingExperience({ userId, showOnboarding }: Onboard
   };
   
   const handleTourComplete = () => {
-    setShowTour(false);
+    endTour();
     completeOnboardingMutation.mutate();
   };
   

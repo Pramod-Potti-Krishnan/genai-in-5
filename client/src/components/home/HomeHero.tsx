@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlayCircle, BookOpen } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { useTour } from '@/components/onboarding/TourContext';
 
 interface HomeHeroProps {
   playAudible: (audible: Audible) => void;
@@ -44,11 +45,13 @@ export default function HomeHero({ playAudible, nextAudible, topics }: HomeHeroP
     navigate('/learn');
   };
   
+  // Get tour context
+  const { startTour } = useTour();
+  
   // Navigate to onboarding
   const handleTakeTour = () => {
-    // Optionally trigger onboarding carousel here
-    console.log('Taking tour...');
-    // Implement your onboarding trigger logic
+    console.log('Starting guided tour...');
+    startTour();
   };
   
   // If we're still determining user's learning status

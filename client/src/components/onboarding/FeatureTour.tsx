@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
+import { useTour } from './TourContext';
 
 interface FeatureTourProps {
   onComplete: () => void;
@@ -14,7 +15,7 @@ interface TourStep {
 // Custom tour component that doesn't rely on react-joyride
 export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [showTour, setShowTour] = useState(false);
+  const { showTour, endTour } = useTour();
   const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   
@@ -82,17 +83,12 @@ export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
     return () => window.removeEventListener('resize', updatePosition);
   }, [currentStep, showTour, tourSteps]);
   
-  // Start the tour when active
+  // Reset step when tour starts
   useEffect(() => {
-    if (active) {
-      // Short delay to ensure DOM is ready
-      const timer = setTimeout(() => {
-        setShowTour(true);
-      }, 800);
-      
-      return () => clearTimeout(timer);
+    if (showTour) {
+      setCurrentStep(0);
     }
-  }, [active]);
+  }, [showTour]);
 
   // Handle next step
   const handleNext = () => {
@@ -105,7 +101,7 @@ export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
 
   // Handle skip or completion
   const handleComplete = () => {
-    setShowTour(false);
+    endTour();
     onComplete();
   };
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'wouter';
-import { Audible, Topic } from '@shared/schema';
+import { useLocation } from 'wouter';
+import { Audible, Topic, UserProgress } from '@shared/schema';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlayCircle, BookOpen } from 'lucide-react';
@@ -13,7 +13,10 @@ interface HomeHeroProps {
 }
 
 export default function HomeHero({ playAudible, nextAudible, topics }: HomeHeroProps) {
-  const navigate = useNavigate();
+  // Get navigation function from wouter
+  const [, setLocation] = useLocation();
+  const navigate = (path: string) => setLocation(path);
+  
   const [isFirstSession, setIsFirstSession] = useState<boolean | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   
@@ -144,7 +147,7 @@ export default function HomeHero({ playAudible, nextAudible, topics }: HomeHeroP
                   size="lg"
                 >
                   <PlayCircle className="h-5 w-5" /> 
-                  {nextAudible.isCompleted ? 'Play Again' : 'Play Now'}
+                  Play Now
                 </Button>
               </div>
             </div>

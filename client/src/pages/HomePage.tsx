@@ -140,7 +140,7 @@ export default function HomePage({ playAudible }: HomePageProps) {
         {/* Global Leaderboard */}
         <LeaderboardCard />
         
-        {/* Next Up Card */}
+        {/* Context-Aware HomeHero - Next Up or Start Learning */}
         <section className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-800">
             <span className="inline-flex items-center">
@@ -148,50 +148,11 @@ export default function HomePage({ playAudible }: HomePageProps) {
               Next Up
             </span>
           </h2>
-          {nextAudible && (
-            <Card className="overflow-hidden relative">
-              <div className="flex">
-                <div className="w-1/3 bg-gray-100 relative flex items-center justify-center" style={{ minHeight: '120px' }}>
-                  {nextAudible.coverImage ? (
-                    <img 
-                      src={nextAudible.coverImage}
-                      alt={nextAudible.title}
-                      className="h-full w-full object-cover absolute inset-0"
-                    />
-                  ) : (
-                    <div 
-                      className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-blue-100 to-blue-50" 
-                    >
-                      <span className="text-5xl">🎧</span>
-                    </div>
-                  )}
-                  {/* Overlay progress circle */}
-                  <div className="absolute bottom-2 right-2 z-10">
-                    <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center">
-                      <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center text-white">
-                        {getTotalProgress()}%
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="w-2/3 p-4 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-medium text-gray-900">{nextAudible.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {formatDuration(nextAudible.lengthSec)} · 
-                      {topics?.find(t => t.id === nextAudible.topicId)?.title || 'General'}
-                    </p>
-                  </div>
-                  <button
-                    className="bg-primary text-white rounded-full py-2 px-6 inline-flex items-center justify-center text-sm font-medium"
-                    onClick={() => playAudible(nextAudible)}
-                  >
-                    <PlayCircle className="mr-2 h-4 w-4" /> Play
-                  </button>
-                </div>
-              </div>
-            </Card>
-          )}
+          <HomeHero
+            playAudible={playAudible}
+            nextAudible={nextAudible}
+            topics={topics}
+          />
         </section>
         
         {/* Weekly Pulse */}

@@ -17,7 +17,7 @@ export default function OnboardingExperience({ userId, showOnboarding }: Onboard
   
   const completeOnboardingMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest('POST', `/api/users/${userId}/complete-onboarding`);
+      const res = await apiRequest('POST', `/api/me/complete-onboarding`);
       return await res.json();
     },
     onSuccess: () => {

@@ -31,6 +31,9 @@ export interface IStorage {
   getUsers(): Promise<User[]>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, data: Partial<InsertUser>): Promise<User | undefined>;
+  updateOnboardingStatus(userId: number, onboarded: boolean): Promise<User | undefined>;
+  updateLastSeenVersion(userId: number, version: string): Promise<User | undefined>;
+  recordLogin(userId: number): Promise<User | undefined>;
   
   // Topic methods
   getTopics(): Promise<Topic[]>;

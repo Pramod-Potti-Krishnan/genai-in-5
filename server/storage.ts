@@ -150,6 +150,18 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
   
+  async updateOnboardingStatus(userId: number, onboarded: boolean): Promise<User | undefined> {
+    return this.updateUser(userId, { onboarded });
+  }
+  
+  async updateLastSeenVersion(userId: number, version: string): Promise<User | undefined> {
+    return this.updateUser(userId, { lastSeenVersion: version });
+  }
+  
+  async recordLogin(userId: number): Promise<User | undefined> {
+    return this.updateUser(userId, { lastLoginAt: new Date() });
+  }
+  
   // ===== Topic Methods =====
   async getTopics(): Promise<Topic[]> {
     return db.select().from(topics).orderBy(topics.title);

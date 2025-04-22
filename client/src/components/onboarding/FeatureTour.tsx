@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useTour } from './TourContext';
 
@@ -12,8 +12,8 @@ interface TourStep {
   content: string;
 }
 
-// Custom tour component that doesn't rely on react-joyride
-export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
+// Custom tour component for tab navigation
+export default function FeatureTour({ onComplete }: FeatureTourProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const { showTour, endTour } = useTour();
   const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
@@ -52,10 +52,7 @@ export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
       });
     };
     
-    // Initialize on mount
     updateWindowSize();
-    
-    // Update on resize
     window.addEventListener('resize', updateWindowSize);
     return () => window.removeEventListener('resize', updateWindowSize);
   }, []);
@@ -76,19 +73,17 @@ export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
       }
     };
     
-    // Update position immediately and when window resizes
     updatePosition();
     window.addEventListener('resize', updatePosition);
-    
     return () => window.removeEventListener('resize', updatePosition);
   }, [currentStep, showTour, tourSteps]);
   
-  // Reset step when tour starts
+  // Reset step when tour starts (only once)
   useEffect(() => {
     if (showTour) {
       setCurrentStep(0);
     }
-  }, [showTour]);
+  }, []); // Empty dependency array to run only once
 
   // Handle next step
   const handleNext = () => {

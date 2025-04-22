@@ -68,7 +68,7 @@ export default function OnboardingExperience({ userId, showOnboarding }: Onboard
       {showTour && (
         <FeatureTour 
           onComplete={handleTourComplete} 
-          active={showTour} 
+          active={true}
         />
       )}
     </>

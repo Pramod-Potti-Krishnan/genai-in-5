@@ -81,7 +81,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       toast({
         title: "Login successful",
-        description: `Welcome back, ${data.user.name}!`,
+        description: `Welcome back, ${data.user.firstName}!`,
       });
       
       return;
@@ -97,10 +97,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (firstName: string, lastName: string, email: string, password: string) => {
     setIsLoading(true);
     try {
-      const res = await apiRequest('POST', '/api/auth/register', { name, email, password });
+      const res = await apiRequest('POST', '/api/auth/register', { firstName, lastName, email, password });
       const data: AuthResponse = await res.json();
       
       setUser(data.user);
@@ -108,7 +108,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       toast({
         title: "Registration successful",
-        description: `Welcome, ${data.user.name}!`,
+        description: `Welcome, ${data.user.firstName}!`,
       });
       
       return;

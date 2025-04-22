@@ -8,7 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 
 export default function RegisterPage() {
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -20,10 +21,10 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!name || !email || !password) {
+    if (!firstName || !email || !password) {
       toast({
         title: "Error",
-        description: "Please fill in all fields",
+        description: "Please fill in all required fields",
         variant: "destructive"
       });
       return;
@@ -40,7 +41,7 @@ export default function RegisterPage() {
     
     setIsLoading(true);
     try {
-      await register(name, email, password);
+      await register(firstName, lastName, email, password);
       // Successfully registered, the AuthProvider will update
     } catch (error) {
       toast({
@@ -63,20 +64,34 @@ export default function RegisterPage() {
           </div>
           
           <form className="space-y-4" onSubmit={handleRegister}>
-            <div>
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                type="text"
-                id="name"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="mt-1"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
+                <Input
+                  type="text"
+                  id="firstName"
+                  placeholder="John"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="mt-1"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  type="text"
+                  id="lastName"
+                  placeholder="Doe"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="mt-1"
+                />
+              </div>
             </div>
             
             <div>
-              <Label htmlFor="register-email">Email</Label>
+              <Label htmlFor="register-email">Email <span className="text-red-500">*</span></Label>
               <Input
                 type="email"
                 id="register-email"
@@ -84,6 +99,7 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1"
+                required
               />
             </div>
             

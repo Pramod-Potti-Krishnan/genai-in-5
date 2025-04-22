@@ -16,6 +16,7 @@ export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [showTour, setShowTour] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   
   // Define the content for each tab
   const tourSteps: TourStep[] = [
@@ -41,6 +42,23 @@ export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
     },
   ];
 
+  // Update window size
+  useEffect(() => {
+    const updateWindowSize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+    
+    // Initialize on mount
+    updateWindowSize();
+    
+    // Update on resize
+    window.addEventListener('resize', updateWindowSize);
+    return () => window.removeEventListener('resize', updateWindowSize);
+  }, []);
+  
   // Update position based on current step
   useEffect(() => {
     if (!showTour) return;
@@ -97,6 +115,24 @@ export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
 
   const currentTourStep = tourSteps[currentStep];
 
+  // Calculate tooltip position to keep it on screen
+  const tooltipWidth = Math.min(windowSize.width - 32, 360); // Max width with padding
+  const tooltipLeft = Math.max(
+    16, // Left padding
+    Math.min(
+      position.left - (tooltipWidth / 2) + (position.width / 2),
+      windowSize.width - tooltipWidth - 16 // Keep right edge in bounds
+    )
+  );
+  
+  // Calculate tooltip top position to keep it on screen
+  const tooltipTop = position.top < 150 
+    ? position.top + 70 // If tab is at the top of screen, show tooltip below
+    : position.top - 150; // Otherwise show above
+  
+  // Determine if arrow should be at top or bottom
+  const arrowAtBottom = position.top >= 150;
+
   // Build a simple custom tooltip
   return (
     <div className="fixed inset-0 z-[10000] bg-black/50 flex items-center justify-center pointer-events-auto">
@@ -113,13 +149,16 @@ export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
       
       {/* Tooltip */}
       <div 
-        className="absolute z-[10002] bg-card p-4 rounded-lg shadow-lg max-w-xs"
+        className="absolute z-[10002] bg-card p-5 rounded-lg shadow-lg w-full"
         style={{
-          top: `${position.top - 130}px`,
-          left: `${position.left - 50}px`, 
+          top: `${tooltipTop}px`,
+          left: '16px',
+          width: `calc(100% - 32px)`,
+          maxWidth: '400px',
+          transform: `translateX(calc(50% - ${tooltipWidth/2}px))`,
         }}
       >
-        <div className="text-foreground mb-4">
+        <div className="text-foreground mb-5 text-base">
           {currentTourStep.content}
         </div>
         
@@ -148,9 +187,13 @@ export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
         {/* Arrow pointing to the target */}
         <div 
           className="absolute w-4 h-4 bg-card rotate-45"
-          style={{
+          style={arrowAtBottom ? {
             bottom: '-8px',
-            left: '50%',
+            left: `calc(${position.left + position.width/2}px - ${tooltipLeft}px)`,
+            transform: 'translateX(-50%)',
+          } : {
+            top: '-8px',
+            left: `calc(${position.left + position.width/2}px - ${tooltipLeft}px)`,
             transform: 'translateX(-50%)',
           }}
         />

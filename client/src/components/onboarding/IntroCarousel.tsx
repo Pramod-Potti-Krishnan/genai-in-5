@@ -46,7 +46,7 @@ export default function IntroCarousel({ onComplete, onSkip }: IntroCarouselProps
         <Button 
           variant="ghost" 
           size="icon" 
-          className="absolute top-2 right-2 z-10" 
+          className="absolute top-3 right-3 z-10" 
           onClick={onSkip}
         >
           <X className="h-4 w-4" />
@@ -55,16 +55,16 @@ export default function IntroCarousel({ onComplete, onSkip }: IntroCarouselProps
         <div className="p-6">
           <div className="flex overflow-hidden relative">
             <div 
-              className="flex transition-transform duration-300 ease-in-out" 
+              className="flex transition-transform duration-300 ease-in-out w-full" 
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
               {slides.map((slide, index) => (
                 <div 
                   key={index} 
-                  className="w-full min-w-full px-4 flex flex-col items-center justify-center"
+                  className="w-full min-w-full flex flex-col justify-center space-y-3"
                 >
-                  <h2 className="text-2xl font-bold text-center mb-4">{slide.title}</h2>
-                  <p className="text-center text-muted-foreground">{slide.content}</p>
+                  <h2 className="text-2xl font-bold text-left">{slide.title}</h2>
+                  <p className="text-left text-muted-foreground text-base leading-relaxed">{slide.content}</p>
                 </div>
               ))}
             </div>
@@ -89,18 +89,24 @@ export default function IntroCarousel({ onComplete, onSkip }: IntroCarouselProps
               <Button 
                 variant="outline" 
                 onClick={prevSlide}
-                className="flex items-center gap-1"
+                className="flex items-center gap-1 px-5 py-2 text-sm font-medium"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Back
               </Button>
             ) : (
-              <div /> // Empty div for spacing
+              <Button 
+                variant="ghost"
+                onClick={onSkip}
+                className="text-muted-foreground px-5 py-2 text-sm font-medium"
+              >
+                Skip
+              </Button>
             )}
             
             <Button 
               onClick={nextSlide}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 bg-primary text-primary-foreground hover:bg-primary/90 px-5 py-2 text-sm font-medium"
             >
               {currentSlide === slides.length - 1 ? "Start Tour" : "Next"}
               {currentSlide < slides.length - 1 && <ChevronRight className="h-4 w-4" />}

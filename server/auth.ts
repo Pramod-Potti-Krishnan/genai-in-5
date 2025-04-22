@@ -16,8 +16,12 @@ declare global {
       id: number;
       email: string;
       name: string;
+      firstName: string;
+      lastName?: string | null;
       avatarUrl?: string | null;
       isAdmin?: boolean;
+      googleId?: string | null;
+      facebookId?: string | null;
     }
   }
 }
@@ -118,7 +122,7 @@ export function setupAuth(app: Express) {
   // Registration endpoint
   app.post("/api/auth/register", async (req, res, next) => {
     try {
-      const { email, password, name } = req.body;
+      const { email, password, firstName, lastName } = req.body;
       
       // Check if user exists
       const existingUser = await storage.getUserByEmail(email);
@@ -126,10 +130,15 @@ export function setupAuth(app: Express) {
         return res.status(400).json({ error: "Email already registered" });
       }
 
+      // Create full name from first and last name
+      const name = lastName ? `${firstName} ${lastName}` : firstName;
+
       // Create new user with hashed password
       const hashedPassword = await hashPassword(password);
       const user = await storage.createUser({
         email,
+        firstName,
+        lastName,
         name,
         password: hashedPassword,
       });
@@ -146,6 +155,8 @@ export function setupAuth(app: Express) {
           user: {
             id: user.id,
             email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
             name: user.name,
             avatarUrl: user.avatarUrl,
           },
@@ -176,6 +187,8 @@ export function setupAuth(app: Express) {
           user: {
             id: user.id,
             email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
             name: user.name,
             avatarUrl: user.avatarUrl,
           },
@@ -208,6 +221,8 @@ export function setupAuth(app: Express) {
     res.json({
       id: user.id,
       email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
       name: user.name,
       avatarUrl: user.avatarUrl,
       isAdmin: user.isAdmin,

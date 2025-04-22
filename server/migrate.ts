@@ -26,11 +26,15 @@ async function migrate() {
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
+        first_name TEXT NOT NULL,
+        last_name TEXT,
         name TEXT NOT NULL,
         email TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
         avatar_url TEXT,
         is_admin BOOLEAN DEFAULT false,
+        google_id TEXT UNIQUE,
+        facebook_id TEXT UNIQUE,
         created_at TIMESTAMP DEFAULT NOW()
       );
 

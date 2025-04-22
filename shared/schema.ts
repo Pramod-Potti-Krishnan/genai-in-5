@@ -6,11 +6,15 @@ import { relations } from "drizzle-orm";
 // User model
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name"),
+  name: text("name").notNull(), // Keep for backward compatibility
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   avatarUrl: text("avatar_url"),
   isAdmin: boolean("is_admin").default(false),
+  googleId: text("google_id").unique(), // For Google OAuth
+  facebookId: text("facebook_id").unique(), // For Facebook OAuth
   createdAt: timestamp("created_at").defaultNow(),
 });
 

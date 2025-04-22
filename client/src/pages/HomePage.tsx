@@ -109,10 +109,10 @@ export default function HomePage({ playAudible }: HomePageProps) {
     const audibleToPlay: Audible = {
       id: parseInt(homeAudible.id.toString()),
       title: homeAudible.title,
-      summary: homeAudible.summary,
-      audioUrl: homeAudible.audioUrl,
+      summary: homeAudible.summary || "",  // Ensure it's not undefined
+      audioUrl: homeAudible.audioUrl || "",  // Ensure it's not undefined
       coverImage: homeAudible.coverImage || null,
-      lengthSec: homeAudible.duration,
+      lengthSec: homeAudible.duration || 0,  // Ensure it's not undefined
       topicId: 1,
       createdAt: null,
       updatedAt: null

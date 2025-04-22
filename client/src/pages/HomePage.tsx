@@ -23,6 +23,8 @@ export default function HomePage({ playAudible }: HomePageProps) {
   const testUser = { 
     id: 1, 
     name: "Test User", 
+    firstName: "Test",
+    lastName: "User",
     email: "test@example.com", 
     isAdmin: false
   };
@@ -129,7 +131,10 @@ export default function HomePage({ playAudible }: HomePageProps) {
       
       <main className="p-4 space-y-6">
         {/* Personal Greeting */}
-        <GreetingBanner userName={activeUser.name || "Learner"} />
+        <GreetingBanner 
+          userName={activeUser.name || "Learner"} 
+          firstName={(activeUser as any).firstName}
+        />
         
         {/* Global Leaderboard */}
         <LeaderboardCard />

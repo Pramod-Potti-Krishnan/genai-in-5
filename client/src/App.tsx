@@ -5,8 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "./components/AuthProvider";
 import { AppProvider } from "./app-context";
-import { OnboardingProvider } from "./hooks/use-onboarding";
-import { OnboardingModal } from "./components/onboarding/OnboardingModal";
 import { ProtectedRoute, AdminRoute } from "./components/ProtectedRoute";
 
 import NotFound from "@/pages/not-found";
@@ -43,8 +41,6 @@ function Router() {
     currentTime: 0,
     duration: 0
   });
-  
-  // Show onboarding modal for new users or after app updates
 
   const playAudible = (audible: Audible) => {
     // Ensure the audible has all required properties for playback
@@ -93,9 +89,6 @@ function Router() {
   return (
     <div className="pb-16 min-h-screen">
       <Header />
-      
-      {/* Onboarding modal will display automatically when conditions are met */}
-      <OnboardingModal />
       
       <main className="mt-2">
         <Switch>
@@ -150,9 +143,7 @@ function App() {
         <Toaster />
         <AuthProvider>
           <AppProvider>
-            <OnboardingProvider>
-              <Router />
-            </OnboardingProvider>
+            <Router />
           </AppProvider>
         </AuthProvider>
       </TooltipProvider>

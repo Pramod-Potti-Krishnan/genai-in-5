@@ -31,9 +31,6 @@ export interface IStorage {
   getUsers(): Promise<User[]>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, data: Partial<InsertUser>): Promise<User | undefined>;
-  updateOnboardingStatus(userId: number, onboarded: boolean): Promise<User | undefined>;
-  updateLastSeenVersion(userId: number, version: string): Promise<User | undefined>;
-  recordLogin(userId: number): Promise<User | undefined>;
   
   // Topic methods
   getTopics(): Promise<Topic[]>;
@@ -151,18 +148,6 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, id))
       .returning();
     return user;
-  }
-  
-  async updateOnboardingStatus(userId: number, onboarded: boolean): Promise<User | undefined> {
-    return this.updateUser(userId, { onboarded });
-  }
-  
-  async updateLastSeenVersion(userId: number, version: string): Promise<User | undefined> {
-    return this.updateUser(userId, { lastSeenVersion: version });
-  }
-  
-  async recordLogin(userId: number): Promise<User | undefined> {
-    return this.updateUser(userId, { lastLoginAt: new Date() });
   }
   
   // ===== Topic Methods =====

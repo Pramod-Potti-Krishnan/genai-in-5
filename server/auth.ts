@@ -24,9 +24,6 @@ declare global {
       isAdmin?: boolean;
       googleId?: string | null;
       facebookId?: string | null;
-      onboarded?: boolean;
-      lastSeenVersion?: string | null;
-      lastLoginAt?: Date | null;
     }
   }
 }
@@ -177,9 +174,6 @@ export function setupAuth(app: Express) {
             lastName: user.lastName,
             name: user.name,
             avatarUrl: user.avatarUrl,
-            onboarded: user.onboarded,
-            lastSeenVersion: user.lastSeenVersion,
-            lastLoginAt: user.lastLoginAt,
           },
           token,
         });
@@ -204,9 +198,6 @@ export function setupAuth(app: Express) {
         const token = generateToken(user);
         
         // Return user data and token
-        // Record login 
-        storage.recordLogin(user.id).catch(err => console.error('Error recording login:', err));
-        
         return res.json({
           user: {
             id: user.id,
@@ -215,9 +206,6 @@ export function setupAuth(app: Express) {
             lastName: user.lastName,
             name: user.name,
             avatarUrl: user.avatarUrl,
-            onboarded: user.onboarded,
-            lastSeenVersion: user.lastSeenVersion,
-            lastLoginAt: user.lastLoginAt,
           },
           token,
         });
@@ -253,9 +241,6 @@ export function setupAuth(app: Express) {
       name: user.name,
       avatarUrl: user.avatarUrl,
       isAdmin: user.isAdmin,
-      onboarded: user.onboarded,
-      lastSeenVersion: user.lastSeenVersion,
-      lastLoginAt: user.lastLoginAt,
     });
   });
 

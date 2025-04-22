@@ -281,57 +281,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Onboarding status endpoints
-  app.get("/api/me/onboarding", isAuthenticated, async (req, res, next) => {
-    try {
-      // Return the current user data including onboarding status
-      res.json({
-        onboarded: req.user!.onboarded,
-        lastSeenVersion: req.user!.lastSeenVersion
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
-  
-  app.post("/api/me/onboarding", isAuthenticated, async (req, res, next) => {
-    try {
-      const { onboarded } = req.body;
-      
-      if (typeof onboarded !== 'boolean') {
-        return res.status(400).json({ error: "onboarded field must be a boolean" });
-      }
-      
-      const updatedUser = await storage.updateOnboardingStatus(req.user!.id, onboarded);
-      
-      res.json({
-        onboarded: updatedUser!.onboarded,
-        lastSeenVersion: updatedUser!.lastSeenVersion
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
-  
-  app.post("/api/me/version", isAuthenticated, async (req, res, next) => {
-    try {
-      const { version } = req.body;
-      
-      if (typeof version !== 'string' || !version) {
-        return res.status(400).json({ error: "version field must be a non-empty string" });
-      }
-      
-      const updatedUser = await storage.updateLastSeenVersion(req.user!.id, version);
-      
-      res.json({
-        onboarded: updatedUser!.onboarded,
-        lastSeenVersion: updatedUser!.lastSeenVersion
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
-  
   // ===== Admin API Routes (requires admin role) =====
   
   // Topic management endpoints

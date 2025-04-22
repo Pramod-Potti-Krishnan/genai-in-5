@@ -16,9 +16,6 @@ export const users = pgTable("users", {
   googleId: text("google_id").unique(), // For Google OAuth
   facebookId: text("facebook_id").unique(), // For Facebook OAuth
   createdAt: timestamp("created_at").defaultNow(),
-  onboarded: boolean("onboarded").default(false), // Track if user has completed onboarding
-  lastSeenVersion: text("last_seen_version"), // Track last app version seen by user
-  lastLoginAt: timestamp("last_login_at"), // Track when user last logged in
 });
 
 // Topics (previously sections)

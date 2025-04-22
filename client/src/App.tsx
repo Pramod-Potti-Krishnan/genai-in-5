@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "./components/AuthProvider";
 import { AppProvider } from "./app-context";
 import { ProtectedRoute, AdminRoute } from "./components/ProtectedRoute";
+import { OnboardingExperience } from "@/components/onboarding";
 
 import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/LoginPage";
@@ -34,7 +35,7 @@ export interface AudioPlayerState {
 }
 
 function Router() {
-  const { user } = useAuth();
+  const { user, showOnboarding } = useAuth();
   const [audioState, setAudioState] = useState<AudioPlayerState>({
     audible: null,
     isPlaying: false,
@@ -42,21 +43,25 @@ function Router() {
     duration: 0
   });
 
-  const playAudible = (audible: Audible) => {
-    // Ensure the audible has all required properties for playback
-    const enhancedAudible: Audible = {
+  const playAudible = (audible: any) => {
+    // Normalize different audible schemas into a common format
+    // This handles both client types and server schema types
+    const enhancedAudible: any = {
       ...audible,
-      // Set duration from durationInSeconds if not explicitly provided
-      duration: audible.duration || audible.durationInSeconds || 0,
-      // Make sure summary is available (fallback to description)
+      // Handle lengthSec (from DB) or durationInSeconds/duration (from client)
+      duration: audible.duration || audible.durationInSeconds || audible.lengthSec || 0,
+      // Handle summary/description differences
       summary: audible.summary || audible.description || '',
+      // Ensure required fields have default values
+      sectionId: audible.sectionId || audible.topicId || 0,
+      description: audible.description || audible.summary || '',
     };
     
     setAudioState({
       audible: enhancedAudible,
       isPlaying: true,
       currentTime: 0,
-      duration: enhancedAudible.duration || enhancedAudible.durationInSeconds || 0
+      duration: enhancedAudible.duration || enhancedAudible.durationInSeconds || enhancedAudible.lengthSec || 0
     });
   };
 
@@ -132,6 +137,13 @@ function Router() {
       )}
       
       <BottomNavigation />
+      
+      {user && (
+        <OnboardingExperience 
+          userId={user.id} 
+          showOnboarding={showOnboarding} 
+        />
+      )}
     </div>
   );
 }

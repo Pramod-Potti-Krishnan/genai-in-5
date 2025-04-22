@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Joyride, { CallBackProps, STATUS, StoreHelpers } from 'react-joyride';
+import Joyride, { CallBackProps, STATUS, StoreHelpers, Step } from 'react-joyride';
 
 interface FeatureTourProps {
   onComplete: () => void;
@@ -12,32 +12,32 @@ export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
   const [stepIndex, setStepIndex] = useState(0);
 
   // Define the tour steps
-  const steps = [
+  const steps: Step[] = [
     {
       target: '[data-tour="home-tab"]',
       content: 'This is your Home tab. Start your learning journey here with personalized recommendations.',
       disableBeacon: true,
-      placement: 'bottom',
+      placement: 'top',
     },
     {
       target: '[data-tour="learn-tab"]',
       content: 'Browse all available topics organized by category in the Learn tab.',
-      placement: 'bottom',
+      placement: 'top',
     },
     {
       target: '[data-tour="revise-tab"]',
-      content: 'Use the Revise tab to practice with flashcards and reinforce what you've learned.',
-      placement: 'bottom',
+      content: 'Use the Revise tab to practice with flashcards and reinforce what you\'ve learned.',
+      placement: 'top',
     },
     {
       target: '[data-tour="trivia-tab"]',
       content: 'Test your knowledge with quick quizzes in the Trivia tab.',
-      placement: 'bottom',
+      placement: 'top',
     },
     {
       target: '[data-tour="progress-tab"]',
       content: 'Track your learning journey and achievements in the Progress tab.',
-      placement: 'bottom',
+      placement: 'top',
     },
   ];
 
@@ -57,7 +57,7 @@ export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
     
     setStepIndex(index);
     
-    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       setRun(false);
       onComplete();
     }

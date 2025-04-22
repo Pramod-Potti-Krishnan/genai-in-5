@@ -18,6 +18,7 @@ export default function BottomNavigation() {
       <button 
         className={`flex flex-col items-center justify-center w-1/5 h-full ${getTextColor("/")}`}
         onClick={() => navigate("/")}
+        data-tour="home-tab"
       >
         <i className="fas fa-home text-lg"></i>
         <span className="text-xs mt-1">Home</span>
@@ -26,6 +27,7 @@ export default function BottomNavigation() {
       <button 
         className={`flex flex-col items-center justify-center w-1/5 h-full ${getTextColor("/learn")}`}
         onClick={() => navigate("/learn")}
+        data-tour="learn-tab"
       >
         <i className="fas fa-headphones text-lg"></i>
         <span className="text-xs mt-1">Learn</span>
@@ -34,6 +36,7 @@ export default function BottomNavigation() {
       <button 
         className={`flex flex-col items-center justify-center w-1/5 h-full ${getTextColor("/revise")}`}
         onClick={() => navigate("/revise")}
+        data-tour="revise-tab"
       >
         <i className="fas fa-pen-to-square text-lg"></i>
         <span className="text-xs mt-1">Revise</span>
@@ -42,6 +45,7 @@ export default function BottomNavigation() {
       <button 
         className={`flex flex-col items-center justify-center w-1/5 h-full ${getTextColor("/trivia")}`}
         onClick={() => navigate("/trivia")}
+        data-tour="trivia-tab"
       >
         <i className="fas fa-question text-lg"></i>
         <span className="text-xs mt-1">Trivia</span>
@@ -50,6 +54,7 @@ export default function BottomNavigation() {
       <button 
         className={`flex flex-col items-center justify-center w-1/5 h-full ${getTextColor("/progress")}`}
         onClick={() => navigate("/progress")}
+        data-tour="progress-tab"
       >
         <i className="fas fa-chart-simple text-lg"></i>
         <span className="text-xs mt-1">Progress</span>

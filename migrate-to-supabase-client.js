@@ -1,8 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
-import { db as sourceDb } from './server/db.js';
-import { users, topics, audibles, flashcards, quizQuestions, 
+import { Pool, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-serverless';
+import ws from "ws";
+import * as schema from "./shared/schema";
+
+neonConfig.webSocketConstructor = ws;
+
+// Source database (Neon)
+const sourcePool = new Pool({ connectionString: process.env.DATABASE_URL });
+const sourceDb = drizzle(sourcePool, { schema });
+
+// Get tables from schema
+const { users, topics, audibles, flashcards, quizQuestions, 
          userProgress, userFlashcards, userQuizScores, 
-         userStreaks, userAchievements, storageObjects } from './shared/schema.js';
+         userStreaks, userAchievements, storageObjects } = schema;
 
 async function migrateToSupabase() {
   console.log("🔄 Starting migration to Supabase...");

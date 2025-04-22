@@ -150,20 +150,22 @@ export default function HomePage({ playAudible }: HomePageProps) {
           {nextAudible && (
             <Card className="overflow-hidden relative">
               <div className="flex">
-                <div className="w-1/3 bg-gray-100 relative">
+                <div className="w-1/3 bg-gray-100 relative flex items-center justify-center" style={{ minHeight: '120px' }}>
                   {nextAudible.coverImage ? (
                     <img 
                       src={nextAudible.coverImage}
                       alt={nextAudible.title}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover absolute inset-0"
                     />
                   ) : (
-                    <div className="h-full w-full flex items-center justify-center bg-primary/10">
-                      <div className="text-4xl text-primary/80">🎧</div>
+                    <div 
+                      className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-blue-100 to-blue-50" 
+                    >
+                      <span className="text-5xl">🎧</span>
                     </div>
                   )}
                   {/* Overlay progress circle */}
-                  <div className="absolute bottom-2 right-2">
+                  <div className="absolute bottom-2 right-2 z-10">
                     <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center">
                       <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center text-white">
                         {getTotalProgress()}%

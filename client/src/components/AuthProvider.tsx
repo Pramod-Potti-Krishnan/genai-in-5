@@ -9,9 +9,11 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (firstName: string, lastName: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  completeOnboarding: () => Promise<void>;
   isLoading: boolean;
   token: string | null;
   isAdmin: boolean;
+  showOnboarding: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -141,15 +143,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
       });
     }
   };
+  
+  const completeOnboarding = async () => {
+    if (!user) return;
+    
+    try {
+      const res = await apiRequest('POST', '/api/me/complete-onboarding');
+      const data = await res.json();
+      
+      if (data.success) {
+        // Update local user state with onboardingComplete = true
+        setUser(prev => prev ? { ...prev, onboardingComplete: true } : null);
+        
+        toast({
+          title: "Onboarding complete",
+          description: "You're all set to use the app!",
+        });
+      }
+    } catch (error) {
+      console.error('Failed to complete onboarding:', error);
+    }
+  };
+
+  // Determine if onboarding should be shown
+  const showOnboarding = Boolean(user && !user.onboardingComplete);
 
   const value = {
     user,
     login,
     register,
     logout,
+    completeOnboarding,
     isLoading,
     token,
-    isAdmin: user?.isAdmin || false
+    isAdmin: user?.isAdmin || false,
+    showOnboarding
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -251,6 +251,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Complete onboarding endpoint
+  app.post("/api/me/complete-onboarding", isAuthenticated, async (req, res, next) => {
+    try {
+      const user = await storage.completeOnboarding(req.user!.id);
+      res.json({ success: true, onboardingComplete: user?.onboardingComplete });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
   // User progress sync endpoint
   app.get("/api/me/progress", isAuthenticated, async (req, res, next) => {
     try {

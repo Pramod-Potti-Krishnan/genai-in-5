@@ -4,3 +4,26 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# Environment variables
+.env
+.env.development
+.env.test
+.env.production
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Migration files with credentials
+migrate-ipv6.cjs
+migrate-supabase.cjs
+
+# Uploads directory
+uploads/*
+!uploads/.gitkeep

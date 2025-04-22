@@ -7,7 +7,8 @@
  * Usage: node validate-supabase-connection.js
  */
 
-const { Client } = require('pg');
+import pg from 'pg';
+const { Client } = pg;
 
 async function validateSupabaseConnection() {
   console.log("🧪 Validating Supabase database connection...\n");

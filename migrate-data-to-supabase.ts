@@ -28,9 +28,15 @@ async function migrateData() {
     connectionString: process.env.SUPABASE_DATABASE_URL,
     ssl: { rejectUnauthorized: false }
   });
-  const targetDb = drizzlePg(targetPool, { schema });
   
   try {
+    // Test Supabase connection
+    console.log("🧪 Testing connection to Supabase...");
+    await targetPool.query('SELECT NOW()');
+    console.log("✅ Successfully connected to Supabase database!");
+    
+    const targetDb = drizzlePg(targetPool, { schema });
+    
     // Migrate users
     console.log("📋 Migrating users...");
     const users = await sourceDb.select().from(schema.users);
@@ -155,6 +161,10 @@ async function migrateData() {
     
   } catch (error) {
     console.error("❌ Data migration failed:", error);
+    console.log("\n⚠️ Please check your Supabase database connection settings:");
+    console.log("1. Verify that the SUPABASE_DATABASE_URL is correct");
+    console.log("2. Ensure your IP address is allowed in Supabase's database settings");
+    console.log("3. Check if the Supabase database is online and accessible\n");
   } finally {
     await sourcePool.end();
     await targetPool.end();

@@ -42,6 +42,13 @@ export default function HomePage({ playAudible }: HomePageProps) {
     staleTime: 60 * 1000, // 1 minute
   });
   
+  // Fetch whether user has started learning
+  const { data: learningStatus } = useQuery<{ hasStartedLearning: boolean }>({
+    queryKey: ['/api/me/has-started-learning'],
+    enabled: true,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+  
   // Loading state
   const isLoading = isLoadingTopics || isLoadingAudibles;
   
@@ -144,8 +151,8 @@ export default function HomePage({ playAudible }: HomePageProps) {
         <section className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-800">
             <span className="inline-flex items-center">
-              <span className="icon mr-2">⏭️</span>
-              Next Up
+              <span className="icon mr-2">{learningStatus?.hasStartedLearning === false ? "🚀" : "⏭️"}</span>
+              {learningStatus?.hasStartedLearning === false ? "Start Here" : "Next Up"}
             </span>
           </h2>
           <HomeHero

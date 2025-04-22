@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "./components/AuthProvider";
 import { AppProvider } from "./app-context";
 import { ProtectedRoute, AdminRoute } from "./components/ProtectedRoute";
 import { OnboardingExperience } from "@/components/onboarding";
+import { TourProvider } from "@/components/onboarding/TourContext";
 
 import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/LoginPage";
@@ -155,7 +156,9 @@ function App() {
         <Toaster />
         <AuthProvider>
           <AppProvider>
-            <Router />
+            <TourProvider>
+              <Router />
+            </TourProvider>
           </AppProvider>
         </AuthProvider>
       </TooltipProvider>

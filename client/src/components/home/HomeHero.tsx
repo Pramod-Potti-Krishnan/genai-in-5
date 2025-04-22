@@ -70,16 +70,19 @@ export default function HomeHero({ playAudible, nextAudible, topics }: HomeHeroP
       {isFirstSession ? (
         // "Start Learning" Mode
         <Card className="w-full h-full overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-300/20 to-primary-600/30 z-10" />
+          {/* Background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-50 to-primary-100 z-0" />
           
-          <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden">
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="text-8xl">🧠</div>
+          {/* Content */}
+          <CardContent className="h-full flex relative z-10 p-6">
+            {/* Brain image in a way that doesn't interfere with text */}
+            <div className="w-1/3 relative flex items-center justify-center hidden md:flex">
+              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 -translate-x-4">
+                <div className="text-8xl">🧠</div>
+              </div>
             </div>
-          </div>
-          
-          <CardContent className="h-full flex flex-col justify-end relative z-20 p-6">
-            <div className="max-w-md">
+            
+            <div className="w-full md:w-2/3 flex flex-col justify-center z-10">
               <h3 className="text-2xl font-bold mb-3">
                 Begin Your GenAI Journey
               </h3>
@@ -102,7 +105,7 @@ export default function HomeHero({ playAudible, nextAudible, topics }: HomeHeroP
                   onClick={handleTakeTour}
                   className="text-muted-foreground hover:text-primary"
                 >
-                  Take a quick tour instead
+                  Take a quick tour again
                 </Button>
               </div>
             </div>

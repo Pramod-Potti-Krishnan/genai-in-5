@@ -15,6 +15,8 @@ async function seedDatabase() {
     const adminPassword = await hashPassword("admin123");
     await db.insert(users).values({
       email: "admin@example.com",
+      firstName: "Admin",
+      lastName: "User",
       name: "Admin User",
       password: adminPassword,
       avatarUrl: null,
@@ -26,6 +28,8 @@ async function seedDatabase() {
     const userPassword = await hashPassword("user123");
     await db.insert(users).values({
       email: "user@example.com", 
+      firstName: "Regular",
+      lastName: "User",
       name: "Regular User",
       password: userPassword,
       avatarUrl: null,

@@ -1,0 +1,64 @@
+🆕 First‑run experience & tab walkthrough
+Goal
+Give new users a concise, two‑stage onboarding:
+
+Intro carousel – 1‑3 swipeable panels that explain the app in plain English.
+
+Interactive tab tour – spotlight each bottom‑nav item (Home, Learn, Revise, Trivia, Progress) with short, direct copy.
+
+A. Intro carousel (Stage 1)
+3 max slides; users swipe horizontally.
+
+Keep text < 18 words per slide.
+
+Suggested slide copy (adapt as needed):
+
+“5‑minute audibles on Generative AI—learn anywhere, anytime.”
+
+“Personalised playlists keep you moving forward at your own pace.”
+
+“Revise with flashcards & test yourself with quick trivia to lock in knowledge.”
+
+Skip button bottom‑right; CTA “Start Tour” bottom‑left or auto‑advance.
+
+B. Tab walkthrough (Stage 2)
+Use a coach‑mark overlay that dims the rest of the screen and highlights one element at a time.
+
+
+Step	Highlight	Copy snippet (≤ 2 lines)	Action
+1	Home tab	“Your hub: greeting, leaderboard, next audible, and weekly digests.”	Tap “Next”
+2	Learn tab	“Browse all topics & start audibles. This is your main classroom.”	Tap “Next”
+3	Revise tab	“Swipe flashcards to reinforce what you heard.”	Tap “Next”
+4	Trivia tab	“10‑question quizzes that take < 2 min—keep your memory sharp.”	Tap “Next”
+5	Progress tab	“Track streaks, scores, and badges. Level up every day.”	“Got it!” finishes tour
+UX details
+
+Each coach‑mark shows step counter “x/5” and Skip in the corner.
+
+Automatic scroll / tab switch when highlighting Learn or Revise segments so the user sees real content under the overlay.
+
+C. Persistence & replay
+Add users.onboardingComplete boolean (default false).
+
+Set true after final “Got it!” or skip.
+
+If false → run onboarding on login.
+
+Provide “Replay Tour” toggle inside Settings for curious users.
+
+D. Implementation latitude
+Pick any lightweight guide library (Intro.js, Shepherd, React Joyride) or custom overlay—whichever is smallest & most mobile‑friendly.
+
+Carousel can be a basic swiper or horizontal scroll + dots; keep the bundle lean.
+
+E. QA checklist
+Tour never re‑shows once completed (unless user replays from Settings).
+
+Works on 320 × 568 px to 414 × 896 px screens.
+
+Skip at any point ends all overlays and lands user on Home.
+
+“Next” and “Got it” buttons meet 44 × 44 px tap‑target.
+
+Deliverable
+Integrated first‑run onboarding that launches automatically for new accounts, combines a three‑slide intro with a five‑step tab spotlight tour, and stores completion state. Include any additional data fields or helper utilities you find necessary.

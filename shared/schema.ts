@@ -15,6 +15,7 @@ export const users = pgTable("users", {
   isAdmin: boolean("is_admin").default(false),
   googleId: text("google_id").unique(), // For Google OAuth
   facebookId: text("facebook_id").unique(), // For Facebook OAuth
+  onboardingComplete: boolean("onboarding_complete").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -271,6 +271,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Check if user has started learning (for home hero)
+  app.get("/api/me/has-started-learning", isAuthenticated, async (req, res, next) => {
+    try {
+      const progress = await storage.getUserProgress(req.user!.id);
+      // User has started learning if they have any progress records
+      const hasStartedLearning = progress.length > 0;
+      
+      res.json({ hasStartedLearning });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
   // User flashcards sync endpoint
   app.get("/api/me/flashcards", isAuthenticated, async (req, res, next) => {
     try {

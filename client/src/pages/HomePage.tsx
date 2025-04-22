@@ -7,6 +7,7 @@ import WeeklyPulseCarousel from "@/components/home/WeeklyPulseCarousel";
 import MonthlyRoundupCarousel from "@/components/home/MonthlyRoundupCarousel";
 import TrendingTopicsCarousel from "@/components/home/TrendingTopicsCarousel";
 import GreetingBanner from "@/components/home/GreetingBanner";
+import HomeHero from "@/components/home/HomeHero";
 import { HomeAudible } from "@/components/home/types";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, PlayCircle } from "lucide-react";

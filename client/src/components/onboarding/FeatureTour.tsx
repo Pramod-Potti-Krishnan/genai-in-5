@@ -42,7 +42,7 @@ export default function FeatureTour({ onComplete, active }: FeatureTourProps) {
     },
   ];
 
-  // Update window size
+  // Update window size only on mount
   useEffect(() => {
     const updateWindowSize = () => {
       setWindowSize({

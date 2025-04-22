@@ -1,0 +1,49 @@
+Home hero redesign – context‑aware CTA
+1. Detection logic
+Extend UserProgress (or equivalent) with a fast lookup:
+
+hasStartedLearning = true when at least one audible is completed or in‑progress.
+
+On /home loader, fetch this boolean and store in front‑end state: isFirstSession = !hasStartedLearning.
+
+2. Hero component
+Two visual modes, same component <HomeHero>:
+
+
+Mode	Trigger	Layout spec	CTA text & action
+Start Learning	isFirstSession === true	Large card (≥ 45 % of viewport height) occupying full width; branded illustration or looping micro‑animation; brief copy (“Pick your first topic and begin your GenAI journey!”).	“Choose Topics” → routes to Learn screen in topic‑selection state.
+Next Up	isFirstSession === false	Medium card (25–30 % viewport height) with cover art, progress ring, play button. Takes more vertical space than current tiny card, sits right under Global Leaderboard.	Play / Resume the queued audible.
+Component should animate height transition when switching modes (ease‑in 250 ms).
+
+3. Visual hierarchy
+Greeting banner
+
+HomeHero (Start Learning or Next Up)
+
+Global Leaderboard
+
+Weekly Pulse carousel
+(Re‑order as above so the large hero owns real estate near the top.)
+
+4. Optional secondary CTA (first‑time mode)
+Small link “Take a quick tour instead” under the main button → triggers existing onboarding carousel if user wants to see UI before diving in.
+
+5. Responsive behaviour
+On 320 × 568 px, hero card should not push Weekly Pulse completely below the fold; aim for 40 vh max.
+
+Illustration / cover art scales with object-fit:cover; min‑height:140 px.
+
+6. Analytics hook
+Emit event home_hero_click with mode (“start_learning” or “next_up”) for future funnel analysis.
+
+7. QA checklist
+New signup → sees Start Learning hero, clicks CTA → Learn page opens topic accordion collapsed.
+
+Completes first audible → reload Home → hero switches to Next Up.
+
+Returning later → immediately sees Next Up with correct queued audible.
+
+State persists across devices (server‑side flag, not localStorage only).
+
+Deliverable
+A conditional <HomeHero> component replacing the current small Next Up card, rendering a prominent “Start Learning” CTA on first visit and a larger, richer “Next Up” card on subsequent sessions.
